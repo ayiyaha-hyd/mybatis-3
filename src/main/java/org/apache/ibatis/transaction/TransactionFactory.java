@@ -15,18 +15,18 @@
  */
 package org.apache.ibatis.transaction;
 
-import java.sql.Connection;
-import java.util.Properties;
+import org.apache.ibatis.session.TransactionIsolationLevel;
 
 import javax.sql.DataSource;
-
-import org.apache.ibatis.session.TransactionIsolationLevel;
+import java.sql.Connection;
+import java.util.Properties;
 
 /**
  * Creates {@link Transaction} instances.
  *
  * @author Clinton Begin
  */
+// 事务工厂(设计模式中的工厂模式)
 public interface TransactionFactory {
 
   /**

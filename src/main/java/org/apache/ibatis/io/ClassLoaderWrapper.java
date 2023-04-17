@@ -201,6 +201,8 @@ public class ClassLoaderWrapper {
 
   }
 
+  // 获取类加载器数组
+  // 返回传入的类加载器,默认类加载器,当前线程类加载器,当前类类加载器,系统类加载器
   ClassLoader[] getClassLoaders(ClassLoader classLoader) {
     return new ClassLoader[]{
         classLoader,

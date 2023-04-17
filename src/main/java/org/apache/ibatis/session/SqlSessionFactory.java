@@ -22,8 +22,9 @@ import java.sql.Connection;
  *
  * @author Clinton Begin
  */
+// sql会话工厂(设计模式中的工厂模式)
 public interface SqlSessionFactory {
-
+  // 获取sql会话
   SqlSession openSession();
 
   SqlSession openSession(boolean autoCommit);
