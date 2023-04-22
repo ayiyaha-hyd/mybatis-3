@@ -18,7 +18,9 @@ package org.apache.ibatis.parsing;
 /**
  * @author Clinton Begin
  */
+// 标记处理器(Token就是标记的意思), 接口
 public interface TokenHandler {
+  // 处理标记
   String handleToken(String content);
 }
 

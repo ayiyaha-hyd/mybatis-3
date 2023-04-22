@@ -29,6 +29,7 @@ import org.w3c.dom.NodeList;
 /**
  * @author Clinton Begin
  */
+// mybatis 自定义的 xml 节点对象 XNode, 封装了 w3c.dom 原有 Node 对象
 public class XNode {
 
   private final Node node;

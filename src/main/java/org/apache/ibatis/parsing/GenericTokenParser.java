@@ -18,10 +18,14 @@ package org.apache.ibatis.parsing;
 /**
  * @author Clinton Begin
  */
+// 通用 Token 解析器(Token就是标记的意思)
 public class GenericTokenParser {
 
+  // 开始的 Token 字符串
   private final String openToken;
+  // 结束的 Token 字符串
   private final String closeToken;
+  // Token 处理器
   private final TokenHandler handler;
 
   public GenericTokenParser(String openToken, String closeToken, TokenHandler handler) {
@@ -35,15 +39,19 @@ public class GenericTokenParser {
       return "";
     }
     // search open token
+    // 查找 openToken的位置
     int start = text.indexOf(openToken);
-    if (start == -1) {
+    if (start == -1) {// 找不到直接返回
       return text;
     }
     char[] src = text.toCharArray();
+    // 起始查找的位置
     int offset = 0;
     final StringBuilder builder = new StringBuilder();
+    // 匹配 openToken 和 closeToken 之间的表达式
     StringBuilder expression = null;
     while (start > -1) {
+      // 转义字符
       if (start > 0 && src[start - 1] == '\\') {
         // this open token is escaped. remove the backslash and continue.
         builder.append(src, offset, start - offset - 1).append(openToken);
