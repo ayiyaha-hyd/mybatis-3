@@ -22,19 +22,22 @@ import org.apache.ibatis.reflection.Reflector;
 /**
  * @author Clinton Begin
  */
+// 属性获取调用者(field getter invoke)
 public class GetFieldInvoker implements Invoker {
   private final Field field;
 
   public GetFieldInvoker(Field field) {
     this.field = field;
   }
-
+  // 调用
   @Override
   public Object invoke(Object target, Object[] args) throws IllegalAccessException {
     try {
+      // 第一次获取
       return field.get(target);
     } catch (IllegalAccessException e) {
       if (Reflector.canControlMemberAccessible()) {
+        // 第二次获取
         field.setAccessible(true);
         return field.get(target);
       } else {

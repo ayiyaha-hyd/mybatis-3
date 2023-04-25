@@ -20,16 +20,28 @@ import java.util.Iterator;
 /**
  * @author Clinton Begin
  */
+// 属性分词器(实现了 Iterator 接口, 支持迭代器访问方式)
 public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
+  /*
+  以 order[3].item[1].name 为例:
+  name: order
+  indexedName: order[3]
+  index: 3
+  children: item[1].name
+   */
+  // 当前字符串
   private String name;
   private final String indexedName;
   private String index;
   private final String children;
 
   public PropertyTokenizer(String fullname) {
+    // 使用 '.' 作为分隔符
     int delim = fullname.indexOf('.');
     if (delim > -1) {
+      // 获取当前 name
       name = fullname.substring(0, delim);
+      // 获取 children
       children = fullname.substring(delim + 1);
     } else {
       name = fullname;

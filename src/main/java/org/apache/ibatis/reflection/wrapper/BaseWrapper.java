@@ -25,15 +25,17 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 /**
  * @author Clinton Begin
  */
+// 基础装饰器(装饰器模式, 抽象装饰器类)
 public abstract class BaseWrapper implements ObjectWrapper {
 
   protected static final Object[] NO_ARGUMENTS = new Object[0];
+  // MetaObject 对象
   protected final MetaObject metaObject;
 
   protected BaseWrapper(MetaObject metaObject) {
     this.metaObject = metaObject;
   }
-
+  // 获取指定属性的值
   protected Object resolveCollection(PropertyTokenizer prop, Object object) {
     if ("".equals(prop.getName())) {
       return object;
@@ -41,7 +43,7 @@ public abstract class BaseWrapper implements ObjectWrapper {
       return metaObject.getValue(prop.getName());
     }
   }
-
+  // 获取集合中指定位置的值
   protected Object getCollectionValue(PropertyTokenizer prop, Object collection) {
     if (collection instanceof Map) {
       return ((Map) collection).get(prop.getIndex());
@@ -72,7 +74,7 @@ public abstract class BaseWrapper implements ObjectWrapper {
       }
     }
   }
-
+  // 设置集合中指定位置的值
   protected void setCollectionValue(PropertyTokenizer prop, Object collection, Object value) {
     if (collection instanceof Map) {
       ((Map) collection).put(prop.getIndex(), value);

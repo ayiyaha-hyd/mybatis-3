@@ -30,6 +30,7 @@ public class DefaultObjectWrapperFactory implements ObjectWrapperFactory {
 
   @Override
   public ObjectWrapper getWrapperFor(MetaObject metaObject, Object object) {
+    // DefaultObjectWrapperFactory 不对外提供
     throw new ReflectionException("The DefaultObjectWrapperFactory should never be called to provide an ObjectWrapper.");
   }
 

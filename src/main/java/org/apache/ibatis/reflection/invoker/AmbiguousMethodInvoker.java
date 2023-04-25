@@ -20,17 +20,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.ibatis.reflection.ReflectionException;
-
+// 不明确的方法调用器
 public class AmbiguousMethodInvoker extends MethodInvoker {
+  // 异常描述信息
   private final String exceptionMessage;
 
   public AmbiguousMethodInvoker(Method method, String exceptionMessage) {
     super(method);
     this.exceptionMessage = exceptionMessage;
   }
-
+  // 调用
   @Override
   public Object invoke(Object target, Object[] args) throws IllegalAccessException, InvocationTargetException {
+    // 此处直接抛异常
     throw new ReflectionException(exceptionMessage);
   }
 }

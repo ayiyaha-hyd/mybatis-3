@@ -22,6 +22,7 @@ import java.util.Optional;
  * @deprecated Since 3.5.0, Will remove this class at future(next major version up).
  */
 @Deprecated
+// Optional 工具类(已弃用)
 public abstract class OptionalUtil {
 
   public static Object ofNullable(Object value) {

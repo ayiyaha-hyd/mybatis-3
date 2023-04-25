@@ -20,6 +20,7 @@ import org.apache.ibatis.io.Resources;
 /**
  * To check the existence of version dependent classes.
  */
+// 检查是否存在相关版本的类(大部分方法已废弃)
 public class Jdk {
 
   /**

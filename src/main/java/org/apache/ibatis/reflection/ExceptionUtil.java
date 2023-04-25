@@ -21,12 +21,13 @@ import java.lang.reflect.UndeclaredThrowableException;
 /**
  * @author Clinton Begin
  */
+// 异常工具类
 public class ExceptionUtil {
 
   private ExceptionUtil() {
     // Prevent Instantiation
   }
-
+  // 通过去除异常的各种包装, 获取实际异常
   public static Throwable unwrapThrowable(Throwable wrapped) {
     Throwable unwrapped = wrapped;
     while (true) {

@@ -25,6 +25,7 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 /**
  * @author Clinton Begin
  */
+// 集合装饰器
 public class CollectionWrapper implements ObjectWrapper {
 
   private final Collection<Object> object;
@@ -85,14 +86,15 @@ public class CollectionWrapper implements ObjectWrapper {
 
   @Override
   public boolean isCollection() {
+    // 是集合
     return true;
   }
-
+  // 仅支持 add, addAll
   @Override
   public void add(Object element) {
     object.add(element);
   }
-
+  // 仅支持 add, addAll
   @Override
   public <E> void addAll(List<E> element) {
     object.addAll(element);

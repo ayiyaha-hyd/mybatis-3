@@ -30,9 +30,11 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 /**
  * @author Clinton Begin
  */
+// 对象元数据, 提供对属性的 get,set 等
 public class MetaObject {
-
+  // 原始对象
   private final Object originalObject;
+  // 封装后的对象
   private final ObjectWrapper objectWrapper;
   private final ObjectFactory objectFactory;
   private final ObjectWrapperFactory objectWrapperFactory;
@@ -43,7 +45,7 @@ public class MetaObject {
     this.objectFactory = objectFactory;
     this.objectWrapperFactory = objectWrapperFactory;
     this.reflectorFactory = reflectorFactory;
-
+    // 根据包装器的类型, 创建具体对应的对象包装器
     if (object instanceof ObjectWrapper) {
       this.objectWrapper = (ObjectWrapper) object;
     } else if (objectWrapperFactory.hasWrapperFor(object)) {
@@ -56,7 +58,7 @@ public class MetaObject {
       this.objectWrapper = new BeanWrapper(this, object);
     }
   }
-
+  // 创建 MetaObject 对象(静态方法)
   public static MetaObject forObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
     if (object == null) {
       return SystemMetaObject.NULL_META_OBJECT;
@@ -108,22 +110,28 @@ public class MetaObject {
   public boolean hasGetter(String name) {
     return objectWrapper.hasGetter(name);
   }
-
+  // 获取指定属性的值
+  // 不断对 name 分词, 递归查找属性, 返回最终属性的值(order[3].item[1].name)
   public Object getValue(String name) {
+    // 对 name 分词
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {
       MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
       if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
         return null;
       } else {
+        // 递归
         return metaValue.getValue(prop.getChildren());
       }
     } else {
+      // 获取值
       return objectWrapper.get(prop);
     }
   }
-
+  // 对指定属性赋值
+  // 不断对 name 分词, 递归获取属性, 对最终属性进行赋值(order[3].item[1].name)
   public void setValue(String name, Object value) {
+    // 对 name 分词
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {
       MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
@@ -135,8 +143,10 @@ public class MetaObject {
           metaValue = objectWrapper.instantiatePropertyValue(name, prop, objectFactory);
         }
       }
+      // 递归
       metaValue.setValue(prop.getChildren(), value);
     } else {
+      // 赋值
       objectWrapper.set(prop, value);
     }
   }

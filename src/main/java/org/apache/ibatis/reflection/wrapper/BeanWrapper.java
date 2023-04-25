@@ -29,8 +29,9 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 /**
  * @author Clinton Begin
  */
+// 实体装饰器(装饰器模式)
 public class BeanWrapper extends BaseWrapper {
-
+  // 普通对象
   private final Object object;
   private final MetaClass metaClass;
 
@@ -39,7 +40,7 @@ public class BeanWrapper extends BaseWrapper {
     this.object = object;
     this.metaClass = MetaClass.forClass(object.getClass(), metaObject.getReflectorFactory());
   }
-
+  // 获取指定属性的值
   @Override
   public Object get(PropertyTokenizer prop) {
     if (prop.getIndex() != null) {
@@ -142,21 +143,25 @@ public class BeanWrapper extends BaseWrapper {
       return metaClass.hasGetter(name);
     }
   }
-
+  // 创建指定属性的值
   @Override
   public MetaObject instantiatePropertyValue(String name, PropertyTokenizer prop, ObjectFactory objectFactory) {
     MetaObject metaValue;
+    // 获取 方法参数类型
     Class<?> type = getSetterType(prop.getName());
     try {
+      // 创建对象
       Object newObject = objectFactory.create(type);
+      // 创建 MetaObject 对象
       metaValue = MetaObject.forObject(newObject, metaObject.getObjectFactory(), metaObject.getObjectWrapperFactory(), metaObject.getReflectorFactory());
+      // 设置当前对象的值
       set(prop, newObject);
     } catch (Exception e) {
       throw new ReflectionException("Cannot set value of property '" + name + "' because '" + name + "' is null and cannot be instantiated on instance of " + type.getName() + ". Cause:" + e.toString(), e);
     }
     return metaValue;
   }
-
+  // 获取属性值
   private Object getBeanProperty(PropertyTokenizer prop, Object object) {
     try {
       Invoker method = metaClass.getGetInvoker(prop.getName());
@@ -188,14 +193,15 @@ public class BeanWrapper extends BaseWrapper {
 
   @Override
   public boolean isCollection() {
+    // 不是集合
     return false;
   }
-
+  // 不允许添加
   @Override
   public void add(Object element) {
     throw new UnsupportedOperationException();
   }
-
+  // 不允许添加
   @Override
   public <E> void addAll(List<E> list) {
     throw new UnsupportedOperationException();

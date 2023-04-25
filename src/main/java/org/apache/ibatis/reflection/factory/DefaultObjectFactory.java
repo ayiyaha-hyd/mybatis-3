@@ -36,32 +36,40 @@ import org.apache.ibatis.reflection.Reflector;
 /**
  * @author Clinton Begin
  */
+// 默认对象工厂
 public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
   private static final long serialVersionUID = -8855120656740914948L;
-
+  // 无参构造方法创建类的实例
   @Override
   public <T> T create(Class<T> type) {
     return create(type, null, null);
   }
 
   @SuppressWarnings("unchecked")
+  // 由给定的构造方法和参数, 创建指定类的实例
   @Override
   public <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+    // 解析接口
     Class<?> classToCreate = resolveInterface(type);
     // we know types are assignable
+    // 实例化类
     return (T) instantiateClass(classToCreate, constructorArgTypes, constructorArgs);
   }
 
+  // 实例化类
   private  <T> T instantiateClass(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
     try {
       Constructor<T> constructor;
+      // 无参构造方法, 创建指定类的实例
       if (constructorArgTypes == null || constructorArgs == null) {
         constructor = type.getDeclaredConstructor();
         try {
+          // 第一次
           return constructor.newInstance();
         } catch (IllegalAccessException e) {
           if (Reflector.canControlMemberAccessible()) {
+            // 第二次
             constructor.setAccessible(true);
             return constructor.newInstance();
           } else {
@@ -69,11 +77,14 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
           }
         }
       }
+      // 有参构造方法, 创建指定类的实例
       constructor = type.getDeclaredConstructor(constructorArgTypes.toArray(new Class[constructorArgTypes.size()]));
       try {
+        // 第一次
         return constructor.newInstance(constructorArgs.toArray(new Object[constructorArgs.size()]));
       } catch (IllegalAccessException e) {
         if (Reflector.canControlMemberAccessible()) {
+          // 第二次
           constructor.setAccessible(true);
           return constructor.newInstance(constructorArgs.toArray(new Object[constructorArgs.size()]));
         } else {
@@ -81,16 +92,20 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
         }
       }
     } catch (Exception e) {
+      // 拼接 argTypes (优雅)
       String argTypes = Optional.ofNullable(constructorArgTypes).orElseGet(Collections::emptyList)
           .stream().map(Class::getSimpleName).collect(Collectors.joining(","));
+      // 拼接 argValues (优雅)
       String argValues = Optional.ofNullable(constructorArgs).orElseGet(Collections::emptyList)
           .stream().map(String::valueOf).collect(Collectors.joining(","));
+      // 抛出反射异常
       throw new ReflectionException("Error instantiating " + type + " with invalid types (" + argTypes + ") or values (" + argValues + "). Cause: " + e, e);
     }
   }
-
+  // 解析接口
   protected Class<?> resolveInterface(Class<?> type) {
     Class<?> classToCreate;
+    // 对于常见的集合接口, 返回对应的实现类
     if (type == List.class || type == Collection.class || type == Iterable.class) {
       classToCreate = ArrayList.class;
     } else if (type == Map.class) {
@@ -104,7 +119,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
     }
     return classToCreate;
   }
-
+  // 是否是集合 Collection 的子类
   @Override
   public <T> boolean isCollection(Class<T> type) {
     return Collection.class.isAssignableFrom(type);

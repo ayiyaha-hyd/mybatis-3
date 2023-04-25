@@ -27,6 +27,7 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 /**
  * @author Clinton Begin
  */
+// Map 对象装饰器(装饰器模式)
 public class MapWrapper extends BaseWrapper {
 
   private final Map<String, Object> map;
@@ -42,6 +43,7 @@ public class MapWrapper extends BaseWrapper {
       Object collection = resolveCollection(prop, map);
       return getCollectionValue(prop, collection);
     } else {
+      // map.get
       return map.get(prop.getName());
     }
   }
@@ -52,6 +54,7 @@ public class MapWrapper extends BaseWrapper {
       Object collection = resolveCollection(prop, map);
       setCollectionValue(prop, collection, value);
     } else {
+      // map.put
       map.put(prop.getName(), value);
     }
   }

@@ -23,12 +23,14 @@ import java.util.Properties;
  *
  * @author Clinton Begin
  */
+// 对象工厂(工厂模式)
 public interface ObjectFactory {
 
   /**
    * Sets configuration properties.
    * @param properties configuration properties
    */
+  // 设置 properties
   default void setProperties(Properties properties) {
     // NOP
   }
@@ -38,6 +40,7 @@ public interface ObjectFactory {
    * @param type Object type
    * @return
    */
+  // 创建指定类对象
   <T> T create(Class<T> type);
 
   /**
@@ -47,6 +50,7 @@ public interface ObjectFactory {
    * @param constructorArgs Constructor argument values
    * @return
    */
+  // 创建指定类对象, 使用指定构造方法
   <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs);
 
   /**
@@ -57,6 +61,7 @@ public interface ObjectFactory {
    * @return whether it is a collection or not
    * @since 3.1.0
    */
+  // 判断类是否是集合
   <T> boolean isCollection(Class<T> type);
 
 }
