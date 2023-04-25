@@ -19,6 +19,7 @@ package org.apache.ibatis.exceptions;
  * @author Clinton Begin
  */
 @SuppressWarnings("deprecation")
+// 持久层异常 (取代 IbatisException, 是 Mybatis 真正的异常基类)
 public class PersistenceException extends IbatisException {
 
   private static final long serialVersionUID = -7537395265357977271L;

@@ -20,12 +20,13 @@ import org.apache.ibatis.executor.ErrorContext;
 /**
  * @author Clinton Begin
  */
+// 异常工厂(工厂模式)
 public class ExceptionFactory {
 
   private ExceptionFactory() {
     // Prevent Instantiation
   }
-
+  // 包装异常, 包装为 PersistenceException 类型
   public static RuntimeException wrapException(String message, Exception e) {
     return new PersistenceException(ErrorContext.instance().message(message).cause(e).toString(), e);
   }

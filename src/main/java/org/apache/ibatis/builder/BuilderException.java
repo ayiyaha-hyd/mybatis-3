@@ -20,6 +20,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 /**
  * @author Clinton Begin
  */
+// 构造器异常, 构造器执行过程中的异常
 public class BuilderException extends PersistenceException {
 
   private static final long serialVersionUID = -3885164021020443281L;

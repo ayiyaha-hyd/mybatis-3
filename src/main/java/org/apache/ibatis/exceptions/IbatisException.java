@@ -19,6 +19,7 @@ package org.apache.ibatis.exceptions;
  * @author Clinton Begin
  */
 @Deprecated
+// IbatisException Ibatis 异常基类(已弃用)
 public class IbatisException extends RuntimeException {
 
   private static final long serialVersionUID = 3880206998166270511L;
