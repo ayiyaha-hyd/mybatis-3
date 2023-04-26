@@ -24,6 +24,7 @@ import java.sql.SQLException;
  *
  * @author Clinton Begin
  */
+// 事务接口(包装数据源连接, 处理连接生命周期,包括创建, 准备, 提交/回滚, 关闭)
 public interface Transaction {
 
   /**
@@ -31,30 +32,35 @@ public interface Transaction {
    * @return DataBase connection
    * @throws SQLException
    */
+  // 获取连接
   Connection getConnection() throws SQLException;
 
   /**
    * Commit inner database connection.
    * @throws SQLException
    */
+  // 提交
   void commit() throws SQLException;
 
   /**
    * Rollback inner database connection.
    * @throws SQLException
    */
+  // 回滚
   void rollback() throws SQLException;
 
   /**
    * Close inner database connection.
    * @throws SQLException
    */
+  // 关闭
   void close() throws SQLException;
 
   /**
    * Get transaction timeout if set.
    * @throws SQLException
    */
+  // 获取事务超时时间(目前实现类里边都是空实现)
   Integer getTimeout() throws SQLException;
 
 }

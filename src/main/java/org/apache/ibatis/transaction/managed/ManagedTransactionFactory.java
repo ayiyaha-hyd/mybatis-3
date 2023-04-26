@@ -15,14 +15,13 @@
  */
 package org.apache.ibatis.transaction.managed;
 
-import java.sql.Connection;
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
 import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.transaction.TransactionFactory;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.util.Properties;
 
 /**
  * Creates {@link ManagedTransaction} instances.
@@ -31,6 +30,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
  *
  * @see ManagedTransaction
  */
+// 托管事务的工厂
 public class ManagedTransactionFactory implements TransactionFactory {
 
   private boolean closeConnection = true;
