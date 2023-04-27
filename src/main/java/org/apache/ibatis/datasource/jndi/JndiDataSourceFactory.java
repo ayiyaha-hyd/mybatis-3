@@ -29,6 +29,7 @@ import org.apache.ibatis.datasource.DataSourceFactory;
 /**
  * @author Clinton Begin
  */
+// JNDI 数据源工厂(JNDI:Java Naming and Directory Interface)
 public class JndiDataSourceFactory implements DataSourceFactory {
 
   public static final String INITIAL_CONTEXT = "initial_context";
@@ -41,16 +42,20 @@ public class JndiDataSourceFactory implements DataSourceFactory {
   public void setProperties(Properties properties) {
     try {
       InitialContext initCtx;
+      // 获取 properties
       Properties env = getEnvProperties(properties);
+      // 创建 InitialContext
       if (env == null) {
         initCtx = new InitialContext();
       } else {
         initCtx = new InitialContext(env);
       }
-
+      // 从 InitialContext 上下文, 获取 DataSource
       if (properties.containsKey(INITIAL_CONTEXT)
           && properties.containsKey(DATA_SOURCE)) {
+        // 获取 Context
         Context ctx = (Context) initCtx.lookup(properties.getProperty(INITIAL_CONTEXT));
+        // 获取 dataSource
         dataSource = (DataSource) ctx.lookup(properties.getProperty(DATA_SOURCE));
       } else if (properties.containsKey(DATA_SOURCE)) {
         dataSource = (DataSource) initCtx.lookup(properties.getProperty(DATA_SOURCE));

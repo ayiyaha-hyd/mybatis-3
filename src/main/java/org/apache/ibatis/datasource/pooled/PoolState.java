@@ -21,19 +21,30 @@ import java.util.List;
 /**
  * @author Clinton Begin
  */
+// 连接池状态(记录活跃连接和空闲连接, 以及相关统计)
+// 可以看到相关方法都是 synchronized
 public class PoolState {
-
+  // 池化数据源
   protected PooledDataSource dataSource;
-
+  // 空闲连接
   protected final List<PooledConnection> idleConnections = new ArrayList<>();
+  // 活跃连接
   protected final List<PooledConnection> activeConnections = new ArrayList<>();
+  // 累计请求次数
   protected long requestCount = 0;
+  // 累计请求时间
   protected long accumulatedRequestTime = 0;
+  // 累计签出时间
   protected long accumulatedCheckoutTime = 0;
+  // 累计获取连接超时的次数
   protected long claimedOverdueConnectionCount = 0;
+  // 累计获取连接超时的占用时长
   protected long accumulatedCheckoutTimeOfOverdueConnections = 0;
+  // 累计等待时间
   protected long accumulatedWaitTime = 0;
+  // 累计等待连接的次数
   protected long hadToWaitCount = 0;
+  // 累计获取到坏的连接的次数
   protected long badConnectionCount = 0;
 
   public PoolState(PooledDataSource dataSource) {

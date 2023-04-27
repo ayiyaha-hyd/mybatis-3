@@ -26,19 +26,29 @@ import org.apache.ibatis.reflection.ExceptionUtil;
 /**
  * @author Clinton Begin
  */
+// 池化的 Connection(实现 InvocationHandler, JDK 动态代理, 代理实际的 Connection)
 class PooledConnection implements InvocationHandler {
-
+  // 关闭连接的方法名
   private static final String CLOSE = "close";
+  // 要代理的接口 Connection
   private static final Class<?>[] IFACES = new Class<?>[] { Connection.class };
-
+  // hashcode
   private final int hashCode;
+  // 池化的数据源
   private final PooledDataSource dataSource;
+  // 真正的连接
   private final Connection realConnection;
+  // 代理连接
   private final Connection proxyConnection;
+  // 签出时间戳(从连接池获取走连接的时间戳)
   private long checkoutTimestamp;
+  // 创建的时间戳
   private long createdTimestamp;
+  // 上一次使用的时间戳
   private long lastUsedTimestamp;
+  // 连接类型代码
   private int connectionTypeCode;
+  // 是否失效
   private boolean valid;
 
   /**
@@ -54,6 +64,7 @@ class PooledConnection implements InvocationHandler {
     this.createdTimestamp = System.currentTimeMillis();
     this.lastUsedTimestamp = System.currentTimeMillis();
     this.valid = true;
+    // 创建 Connection 的代理对象
     this.proxyConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), IFACES, this);
   }
 
@@ -232,6 +243,7 @@ class PooledConnection implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     String methodName = method.getName();
+    // 如果是 close 方法, 将连接放回连接池
     if (CLOSE.hashCode() == methodName.hashCode() && CLOSE.equals(methodName)) {
       dataSource.pushConnection(this);
       return null;
@@ -240,8 +252,10 @@ class PooledConnection implements InvocationHandler {
       if (!Object.class.equals(method.getDeclaringClass())) {
         // issue #579 toString() should never fail
         // throw an SQLException instead of a Runtime
+        // 签出连接
         checkConnection();
       }
+      // 反射调用对应的方法
       return method.invoke(realConnection, args);
     } catch (Throwable t) {
       throw ExceptionUtil.unwrapThrowable(t);

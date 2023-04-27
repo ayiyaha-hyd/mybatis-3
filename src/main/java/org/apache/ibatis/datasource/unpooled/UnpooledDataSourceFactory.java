@@ -27,6 +27,7 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 /**
  * @author Clinton Begin
  */
+// 非池化数据源工厂(即没有连接池, 每次请求会打开和关闭连接)
 public class UnpooledDataSourceFactory implements DataSourceFactory {
 
   private static final String DRIVER_PROPERTY_PREFIX = "driver.";
@@ -37,24 +38,30 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
   public UnpooledDataSourceFactory() {
     this.dataSource = new UnpooledDataSource();
   }
-
+  // 设置属性到数据源
   @Override
   public void setProperties(Properties properties) {
     Properties driverProperties = new Properties();
+    // 创建数据源对应的 MetaObject 对象
     MetaObject metaDataSource = SystemMetaObject.forObject(dataSource);
+    // 遍历
     for (Object key : properties.keySet()) {
       String propertyName = (String) key;
+      // 以 driver 开头的配置
       if (propertyName.startsWith(DRIVER_PROPERTY_PREFIX)) {
         String value = properties.getProperty(propertyName);
         driverProperties.setProperty(propertyName.substring(DRIVER_PROPERTY_PREFIX_LENGTH), value);
       } else if (metaDataSource.hasSetter(propertyName)) {
         String value = (String) properties.get(propertyName);
+        // 将 property 字符串转换为 dataSource 对应属性的类型
         Object convertedValue = convertValue(metaDataSource, propertyName, value);
+        // dataSource 属性赋值
         metaDataSource.setValue(propertyName, convertedValue);
       } else {
         throw new DataSourceException("Unknown DataSource property: " + propertyName);
       }
     }
+    // 设置 driverProperties 到 MetaObject 中
     if (driverProperties.size() > 0) {
       metaDataSource.setValue("driverProperties", driverProperties);
     }
@@ -64,7 +71,7 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
   public DataSource getDataSource() {
     return dataSource;
   }
-
+  // 将 property 字符串转换为 dataSource 对应属性的类型
   private Object convertValue(MetaObject metaDataSource, String propertyName, String value) {
     Object convertedValue = value;
     Class<?> targetType = metaDataSource.getSetterType(propertyName);
