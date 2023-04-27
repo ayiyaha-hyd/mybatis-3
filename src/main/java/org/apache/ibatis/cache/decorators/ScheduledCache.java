@@ -22,15 +22,22 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Clinton Begin
  */
+// 定时清除缓存
+// getSize/put/get/remove 会调用定期清缓存方法, 直接调用 clear 则直接清除
 public class ScheduledCache implements Cache {
-
+  // Cache (缓存委托)
   private final Cache delegate;
+  // 清除间隔
   protected long clearInterval;
+  // 上次清除的实际(时间戳)
   protected long lastClear;
-
+  // 构造方法
   public ScheduledCache(Cache delegate) {
+    // 委托代理
     this.delegate = delegate;
+    // 清除间隔为 1 小时
     this.clearInterval = TimeUnit.HOURS.toMillis(1);
+    // 上次清除实际设置为当前时间
     this.lastClear = System.currentTimeMillis();
   }
 
@@ -68,6 +75,7 @@ public class ScheduledCache implements Cache {
 
   @Override
   public void clear() {
+    // 直接调用 clear 方法, 会刷新上一次清除时间标记
     lastClear = System.currentTimeMillis();
     delegate.clear();
   }
@@ -81,9 +89,11 @@ public class ScheduledCache implements Cache {
   public boolean equals(Object obj) {
     return delegate.equals(obj);
   }
-
+  // 过期清除的方法
   private boolean clearWhenStale() {
+    // 判断是否过期
     if (System.currentTimeMillis() - lastClear > clearInterval) {
+      // 清除
       clear();
       return true;
     }

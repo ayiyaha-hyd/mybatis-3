@@ -22,13 +22,17 @@ import org.apache.ibatis.logging.LogFactory;
 /**
  * @author Clinton Begin
  */
+// 记录日志的缓存(支持打印日志)
 public class LoggingCache implements Cache {
-
+  // 标识
   private final Log log;
+  // Cache (缓存委托, 被装饰的Cache)
   private final Cache delegate;
+  // 统计请求缓存的次数
   protected int requests = 0;
+  //统计命中缓存的次数
   protected int hits = 0;
-
+  // 构造方法(包装缓存)
   public LoggingCache(Cache delegate) {
     this.delegate = delegate;
     this.log = LogFactory.getLog(getId());
@@ -51,9 +55,11 @@ public class LoggingCache implements Cache {
 
   @Override
   public Object getObject(Object key) {
+    // 请求次数 ++
     requests++;
     final Object value = delegate.getObject(key);
     if (value != null) {
+      // 如果命中缓存, 命中次数 ++
       hits++;
     }
     if (log.isDebugEnabled()) {
@@ -81,7 +87,7 @@ public class LoggingCache implements Cache {
   public boolean equals(Object obj) {
     return delegate.equals(obj);
   }
-
+  // 缓存命中率
   private double getHitRatio() {
     return (double) hits / (double) requests;
   }

@@ -15,24 +15,18 @@
  */
 package org.apache.ibatis.cache.decorators;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectStreamClass;
-import java.io.Serializable;
-
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheException;
 import org.apache.ibatis.io.Resources;
 
+import java.io.*;
+
 /**
  * @author Clinton Begin
  */
+// 序列化缓存(使缓存 value 支持序列化)
 public class SerializedCache implements Cache {
-
+  // Cache (缓存委托)
   private final Cache delegate;
 
   public SerializedCache(Cache delegate) {
@@ -51,6 +45,7 @@ public class SerializedCache implements Cache {
 
   @Override
   public void putObject(Object key, Object object) {
+    // put 的时候对实现了 Serializable 接口的 value, 做序列化处理(序列化存储)
     if (object == null || object instanceof Serializable) {
       delegate.putObject(key, serialize((Serializable) object));
     } else {
@@ -83,7 +78,7 @@ public class SerializedCache implements Cache {
   public boolean equals(Object obj) {
     return delegate.equals(obj);
   }
-
+  // 使用 jdk 原生序列化方式, 对 value 进行序列化
   private byte[] serialize(Serializable value) {
     try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
          ObjectOutputStream oos = new ObjectOutputStream(bos)) {
@@ -94,7 +89,7 @@ public class SerializedCache implements Cache {
       throw new CacheException("Error serializing object.  Cause: " + e, e);
     }
   }
-
+  // 使用 jdk 原生反序列化方式, 对 value 进行反序列化
   private Serializable deserialize(byte[] value) {
     Serializable result;
     try (ByteArrayInputStream bis = new ByteArrayInputStream(value);
@@ -105,13 +100,13 @@ public class SerializedCache implements Cache {
     }
     return result;
   }
-
+  // 自定义对象输入流
   public static class CustomObjectInputStream extends ObjectInputStream {
 
     public CustomObjectInputStream(InputStream in) throws IOException {
       super(in);
     }
-
+    // 重写解析对象的方法
     @Override
     protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException {
       return Resources.classForName(desc.getName());

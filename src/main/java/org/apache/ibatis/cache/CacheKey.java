@@ -15,20 +15,22 @@
  */
 package org.apache.ibatis.cache;
 
+import org.apache.ibatis.reflection.ArrayUtil;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-import org.apache.ibatis.reflection.ArrayUtil;
-
 /**
  * @author Clinton Begin
  */
+// 缓存键(实现了 Cloneable, Serializable 接口)
+// Mybatis 自定义的缓存 key
 public class CacheKey implements Cloneable, Serializable {
 
   private static final long serialVersionUID = 1146682552656046210L;
-
+  // 空缓存键
   public static final CacheKey NULL_CACHE_KEY = new CacheKey(){
     @Override
     public void update(Object object) {
@@ -44,7 +46,9 @@ public class CacheKey implements Cloneable, Serializable {
   private static final int DEFAULT_HASHCODE = 17;
 
   private final int multiplier;
+  // 缓存键的 hashcode
   private int hashcode;
+  // 校验和
   private long checksum;
   private int count;
   // 8/21/2017 - Sonarlint flags this as needing to be marked transient.  While true if content is not serializable, this is not always true and thus should not be marked transient.
@@ -67,14 +71,17 @@ public class CacheKey implements Cloneable, Serializable {
   }
 
   public void update(Object object) {
+    // object 的 hashcode
     int baseHashCode = object == null ? 1 : ArrayUtil.hashCode(object);
-
+    // 累计 count
     count++;
+    // 更新校验和 checksum + baseHashCode
     checksum += baseHashCode;
+    // 计算 baseHashCode
     baseHashCode *= count;
-
+    // 计算新的 hashcode
     hashcode = multiplier * hashcode + baseHashCode;
-
+    // 将 object 添加到 updateList
     updateList.add(object);
   }
 
@@ -86,25 +93,29 @@ public class CacheKey implements Cloneable, Serializable {
 
   @Override
   public boolean equals(Object object) {
+    // 比较引用
     if (this == object) {
       return true;
     }
+    // 比较类型
     if (!(object instanceof CacheKey)) {
       return false;
     }
 
     final CacheKey cacheKey = (CacheKey) object;
-
+    // 比较 hashcode
     if (hashcode != cacheKey.hashcode) {
       return false;
     }
+    // 比较 checksum
     if (checksum != cacheKey.checksum) {
       return false;
     }
+    // 比较 count
     if (count != cacheKey.count) {
       return false;
     }
-
+    // 比较 updateList 数组
     for (int i = 0; i < updateList.size(); i++) {
       Object thisObject = updateList.get(i);
       Object thatObject = cacheKey.updateList.get(i);
@@ -131,7 +142,9 @@ public class CacheKey implements Cloneable, Serializable {
 
   @Override
   public CacheKey clone() throws CloneNotSupportedException {
+    // 拷贝
     CacheKey clonedCacheKey = (CacheKey) super.clone();
+    // 拷贝对象里边的 list, 避免原 list 受影响(深拷贝)
     clonedCacheKey.updateList = new ArrayList<>(updateList);
     return clonedCacheKey;
   }
