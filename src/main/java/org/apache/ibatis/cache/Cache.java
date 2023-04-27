@@ -38,24 +38,27 @@ import java.util.concurrent.locks.ReadWriteLock;
  *
  * @author Clinton Begin
  */
-
+// 缓存接口 (缓存容器, 该接口的实现为装饰类,对 Cache 做了不同的装饰处理)
 public interface Cache {
 
   /**
    * @return The identifier of this cache
    */
+  // 缓存标识符
   String getId();
 
   /**
    * @param key Can be any object but usually it is a {@link CacheKey}
    * @param value The result of a select.
    */
+  // 添加
   void putObject(Object key, Object value);
 
   /**
    * @param key The key
    * @return The object stored in the cache.
    */
+  // 获取
   Object getObject(Object key);
 
   /**
@@ -72,11 +75,13 @@ public interface Cache {
    * @param key The key
    * @return Not used
    */
+  // 移除
   Object removeObject(Object key);
 
   /**
    * Clears this cache instance.
    */
+  // 清空缓存
   void clear();
 
   /**
@@ -84,6 +89,7 @@ public interface Cache {
    *
    * @return The number of elements stored in the cache (not its capacity).
    */
+  // 获取缓存大小
   int getSize();
 
   /**
@@ -93,6 +99,7 @@ public interface Cache {
    *
    * @return A ReadWriteLock
    */
+  // 获取读写锁, 已经废弃
   default ReadWriteLock getReadWriteLock() {
     return null;
   }

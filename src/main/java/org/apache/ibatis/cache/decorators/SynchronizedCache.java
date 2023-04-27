@@ -20,8 +20,9 @@ import org.apache.ibatis.cache.Cache;
 /**
  * @author Clinton Begin
  */
+// 同步操作缓存(对 get/put/remove/clear 加 synchronized 同步锁)
 public class SynchronizedCache implements Cache {
-
+  // Cache (缓存委托)
   private final Cache delegate;
 
   public SynchronizedCache(Cache delegate) {
