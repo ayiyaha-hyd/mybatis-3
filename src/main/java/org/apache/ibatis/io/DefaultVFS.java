@@ -15,13 +15,10 @@
  */
 package org.apache.ibatis.io;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -31,14 +28,12 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
-
 /**
  * A default implementation of {@link VFS} that works for most application servers.
  *
  * @author Ben Gunter
  */
+// 默认的 VFS 实现类
 public class DefaultVFS extends VFS {
   private static final Log log = LogFactory.getLog(DefaultVFS.class);
 
@@ -47,6 +42,7 @@ public class DefaultVFS extends VFS {
 
   @Override
   public boolean isValid() {
+    // VFS 默认实现类, 肯定支持
     return true;
   }
 
@@ -58,6 +54,7 @@ public class DefaultVFS extends VFS {
 
       // First, try to find the URL of a JAR file containing the requested resource. If a JAR
       // file is found, then we'll list child resources by reading the JAR.
+      // 首先，尝试找到包含所请求资源的JAR文件的URL。如果找到了JAR文件，则我们将通过读取JAR文件来列出子资源。
       URL jarUrl = findJarForResource(url);
       if (jarUrl != null) {
         is = jarUrl.openStream();
@@ -175,8 +172,10 @@ public class DefaultVFS extends VFS {
    * @return The names of all the matching entries
    * @throws IOException If I/O errors occur
    */
+  // 列出给定 jar 文件中, 以指定 path 开头的条目的名称
   protected List<String> listResources(JarInputStream jar, String path) throws IOException {
     // Include the leading and trailing slash when matching names
+    // 确保 开头结尾都是"/"
     if (!path.startsWith("/")) {
       path = "/" + path;
     }
@@ -185,6 +184,7 @@ public class DefaultVFS extends VFS {
     }
 
     // Iterate over the entries and collect those that begin with the requested path
+    // 遍历 Jar 条目,获取请求路径的条目
     List<String> resources = new ArrayList<>();
     for (JarEntry entry; (entry = jar.getNextJarEntry()) != null;) {
       if (!entry.isDirectory()) {
@@ -223,6 +223,7 @@ public class DefaultVFS extends VFS {
     }
 
     // If the file part of the URL is itself a URL, then that URL probably points to the JAR
+    // 通过 url.getFile() 不断获取深层次的 jar file, 直到抛异常,说明此刻是找到了 jar
     boolean continueLoop = true;
     while (continueLoop) {
       try {
@@ -237,7 +238,8 @@ public class DefaultVFS extends VFS {
     }
 
     // Look for the .jar extension and chop off everything after that
-    StringBuilder jarUrl = new StringBuilder(url.toExternalForm());
+    StringBuilder jarUrl = new StringBuilder(url.toExternalForm());// 获取URL的字符串表示形式
+    // 判断是否以 .jar 结尾
     int index = jarUrl.lastIndexOf(".jar");
     if (index >= 0) {
       jarUrl.setLength(index + 4);
@@ -255,6 +257,7 @@ public class DefaultVFS extends VFS {
     // Try to open and test it
     try {
       URL testUrl = new URL(jarUrl.toString());
+      // 判断是否是 jar 文件
       if (isJar(testUrl)) {
         return testUrl;
       }
@@ -263,18 +266,19 @@ public class DefaultVFS extends VFS {
         if (log.isDebugEnabled()) {
           log.debug("Not a JAR: " + jarUrl);
         }
-        jarUrl.replace(0, jarUrl.length(), testUrl.getFile());
+        // 获取文件
+        jarUrl.replace(0, jarUrl.length(), testUrl.getFile());// 替换
         File file = new File(jarUrl.toString());
 
         // File name might be URL-encoded
-        if (!file.exists()) {
+        if (!file.exists()) {// 处理路径编码问题
           try {
             file = new File(URLEncoder.encode(jarUrl.toString(), "UTF-8"));
           } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("Unsupported encoding?  UTF-8?  That's unpossible.");
           }
         }
-
+        // 判断文件是否存在
         if (file.exists()) {
           if (log.isDebugEnabled()) {
             log.debug("Trying real file: " + file.getAbsolutePath());
@@ -322,11 +326,20 @@ public class DefaultVFS extends VFS {
    *            must be at least the size of {@link #JAR_MAGIC}. (The same buffer may be reused
    *            for multiple calls as an optimization.)
    */
+  // 判断指定 URL 资源文件是否是 jar 文件
+  /*
+  Java jar magic是指Java程序中使用的一种文件类型判断机制。
+  Java程序可以使用魔数（Magic Number）来识别不同的文件类型，魔数是一种特殊的数字序列，用于标识特定的文件类型。
+  在Java中，可以使用文件的魔数来判断文件是否为Jar压缩包，即判断文件的头两个字节是否为0x504B（即PK）。
+  因为JAR文件是使用PKZIP格式进行压缩的，所以JAR文件的魔数就是PK。如果文件头两个字节不是PK，则不是JAR压缩包，Java程序也无法解开该文件。
+  这种机制可以确保Java程序只对正确的文件类型进行处理，提高程序的安全性和稳定性。
+  */
   protected boolean isJar(URL url, byte[] buffer) {
     InputStream is = null;
     try {
       is = url.openStream();
       is.read(buffer, 0, JAR_MAGIC.length);
+      // 判断前几个字节是否是{P,K,3,4}, 符合则是 jar 类型
       if (Arrays.equals(buffer, JAR_MAGIC)) {
         if (log.isDebugEnabled()) {
           log.debug("Found JAR: " + url);
