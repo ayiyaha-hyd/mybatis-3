@@ -35,8 +35,9 @@ import org.apache.ibatis.io.Resources;
 /**
  * @author Clinton Begin
  */
+// 类型别名注册表 对象
 public class TypeAliasRegistry {
-
+  // 使用简单的 HashMap 缓存Class 对象(即类型)
   private final Map<String, Class<?>> typeAliases = new HashMap<>();
 
   public TypeAliasRegistry() {
@@ -108,11 +109,15 @@ public class TypeAliasRegistry {
         return null;
       }
       // issue #748
+      // 将别名转为小写
       String key = string.toLowerCase(Locale.ENGLISH);
       Class<T> value;
+      // 判断缓存是否有该类型
       if (typeAliases.containsKey(key)) {
+        // 缓存有则从缓存中获取
         value = (Class<T>) typeAliases.get(key);
       } else {
+        // 通过 Resources 对象, 从类加载器中加载 Class 对象
         value = (Class<T>) Resources.classForName(string);
       }
       return value;

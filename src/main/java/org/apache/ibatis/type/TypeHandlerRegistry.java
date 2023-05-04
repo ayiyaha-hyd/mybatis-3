@@ -51,8 +51,12 @@ import org.apache.ibatis.io.Resources;
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
+// 类型处理器注册表
 public final class TypeHandlerRegistry {
 
+  // 定义了一大堆类型处理器缓存
+
+  // JdbcType -> TypeHandler(缓存)
   private final Map<JdbcType, TypeHandler<?>>  jdbcTypeHandlerMap = new EnumMap<>(JdbcType.class);
   private final Map<Type, Map<JdbcType, TypeHandler<?>>> typeHandlerMap = new ConcurrentHashMap<>();
   private final TypeHandler<Object> unknownTypeHandler = new UnknownTypeHandler(this);
