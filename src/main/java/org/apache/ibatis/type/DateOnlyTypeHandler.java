@@ -24,19 +24,24 @@ import java.util.Date;
 /**
  * @author Clinton Begin
  */
+// Date 类型处理器(java.util.Date <-> java.sql.Date)
 public class DateOnlyTypeHandler extends BaseTypeHandler<Date> {
 
   @Override
   public void setNonNullParameter(PreparedStatement ps, int i, Date parameter, JdbcType jdbcType)
       throws SQLException {
+    // 将 java.util.Date 转换为 java.sql.Date 类型
+    // 然后设置参数
     ps.setDate(i, new java.sql.Date(parameter.getTime()));
   }
 
   @Override
   public Date getNullableResult(ResultSet rs, String columnName)
       throws SQLException {
+    // 获取 java.sql.Date 值
     java.sql.Date sqlDate = rs.getDate(columnName);
     if (sqlDate != null) {
+      // 将 java.sql.Date 转换为 java.util.Date 类型
       return new Date(sqlDate.getTime());
     }
     return null;
@@ -45,8 +50,10 @@ public class DateOnlyTypeHandler extends BaseTypeHandler<Date> {
   @Override
   public Date getNullableResult(ResultSet rs, int columnIndex)
       throws SQLException {
+    // 获取 java.sql.Date 值
     java.sql.Date sqlDate = rs.getDate(columnIndex);
     if (sqlDate != null) {
+      // 将 java.sql.Date 转换为 java.util.Date 类型
       return new Date(sqlDate.getTime());
     }
     return null;
@@ -55,8 +62,10 @@ public class DateOnlyTypeHandler extends BaseTypeHandler<Date> {
   @Override
   public Date getNullableResult(CallableStatement cs, int columnIndex)
       throws SQLException {
+    // 获取 java.sql.Date 值
     java.sql.Date sqlDate = cs.getDate(columnIndex);
     if (sqlDate != null) {
+      // 将 java.sql.Date 转换为 java.util.Date 类型
       return new Date(sqlDate.getTime());
     }
     return null;

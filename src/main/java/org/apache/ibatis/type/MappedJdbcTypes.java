@@ -26,8 +26,10 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target(ElementType.TYPE)// 注册到类
 public @interface MappedJdbcTypes {
+  // 匹配 JdbcType 类型的注解
   JdbcType[] value();
+  // 是否包含 Null 类型的 JdbcType
   boolean includeNullJdbcType() default false;
 }

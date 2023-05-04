@@ -22,6 +22,7 @@ import java.util.Map;
 /**
  * @author Clinton Begin
  */
+// JdbcType 类型的枚举类
 public enum JdbcType {
   /*
    * This is added to enable basic support for the
@@ -68,11 +69,13 @@ public enum JdbcType {
   DATETIMEOFFSET(-155), // SQL Server 2008
   TIME_WITH_TIMEZONE(Types.TIME_WITH_TIMEZONE), // JDBC 4.2 JDK8
   TIMESTAMP_WITH_TIMEZONE(Types.TIMESTAMP_WITH_TIMEZONE); // JDBC 4.2 JDK8
-
+  // 类型编号
   public final int TYPE_CODE;
+  // code -> JdbcType 映射(用 map 存储映射关系,提供检索效率)
   private static Map<Integer,JdbcType> codeLookup = new HashMap<>();
 
   static {
+    // 初始化 codeLookup
     for (JdbcType type : JdbcType.values()) {
       codeLookup.put(type.TYPE_CODE, type);
     }
@@ -81,8 +84,9 @@ public enum JdbcType {
   JdbcType(int code) {
     this.TYPE_CODE = code;
   }
-
+  // 通过 type code 查找 JdbcType
   public static JdbcType forCode(int code)  {
+    // 相比遍历 values() 查找, map.get() 效率要快
     return codeLookup.get(code);
   }
 

@@ -15,6 +15,9 @@
  */
 package org.apache.ibatis.io;
 
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,24 +27,25 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
-
 /**
  * Provides a very simple API for accessing resources within an application server.
  *
  * @author Ben Gunter
  */
+// 虚拟文件系统(抽象类)
 public abstract class VFS {
   private static final Log log = LogFactory.getLog(VFS.class);
 
   /** The built-in implementations. */
+  // 内置 VFS 实现类数组
   public static final Class<?>[] IMPLEMENTATIONS = { JBoss6VFS.class, DefaultVFS.class };
 
   /** The list to which implementations are added by {@link #addImplClass(Class)}. */
+  // 用户自定义的 VFS 实现类集合
   public static final List<Class<? extends VFS>> USER_IMPLEMENTATIONS = new ArrayList<>();
 
   /** Singleton instance holder. */
+  // 单例持有者(采用"懒汉式, 线程安全"的方式,实现单例)
   private static class VFSHolder {
     static final VFS INSTANCE = createVFS();
 
@@ -53,6 +57,7 @@ public abstract class VFS {
       impls.addAll(Arrays.asList((Class<? extends VFS>[]) IMPLEMENTATIONS));
 
       // Try each implementation class until a valid one is found
+      // 遍历各个实现类, 挨个尝试获取示例, 选择最后一个 VFS 实现类
       VFS vfs = null;
       for (int i = 0; vfs == null || !vfs.isValid(); i++) {
         Class<? extends VFS> impl = impls.get(i);
@@ -82,6 +87,7 @@ public abstract class VFS {
    * Get the singleton {@link VFS} instance. If no {@link VFS} implementation can be found for the
    * current environment, then this method returns null.
    */
+  // 获取单例
   public static VFS getInstance() {
     return VFSHolder.INSTANCE;
   }
@@ -101,8 +107,10 @@ public abstract class VFS {
   /** Get a class by name. If the class is not found then return null. */
   protected static Class<?> getClass(String className) {
     try {
+      // 这里用
       return Thread.currentThread().getContextClassLoader().loadClass(className);
-//      return ReflectUtil.findClass(className);
+      // 根据 issues 解释, JBoss调用有问题所有没有用 ReflectUtil, 而是手动用 thread classLoader loadClass
+      //      return ReflectUtil.findClass(className);
     } catch (ClassNotFoundException e) {
       if (log.isDebugEnabled()) {
         log.debug("Class not found: " + className);
@@ -172,6 +180,7 @@ public abstract class VFS {
   }
 
   /** Return true if the {@link VFS} implementation is valid for the current environment. */
+  // 判断是否为合法的 VFS
   public abstract boolean isValid();
 
   /**
@@ -194,6 +203,7 @@ public abstract class VFS {
    * @return A list containing the names of the child resources.
    * @throws IOException If I/O errors occur
    */
+  // 获取指定路径下的所有资源
   public List<String> list(String path) throws IOException {
     List<String> names = new ArrayList<>();
     for (URL url : getResources(path)) {
