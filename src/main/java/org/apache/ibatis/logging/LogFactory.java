@@ -21,16 +21,18 @@ import java.lang.reflect.Constructor;
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
+// 日志工厂(工厂模式)
 public final class LogFactory {
 
   /**
    * Marker to be used by logging implementations that support markers.
    */
   public static final String MARKER = "MYBATIS";
-
+  // 日志构造器
   private static Constructor<? extends Log> logConstructor;
 
   static {
+    // 逐个尝试, 判断使用哪个作为 Log 的实现
     tryImplementation(LogFactory::useSlf4jLogging);
     tryImplementation(LogFactory::useCommonsLogging);
     tryImplementation(LogFactory::useLog4J2Logging);
@@ -42,7 +44,7 @@ public final class LogFactory {
   private LogFactory() {
     // disable construction
   }
-
+  // 获取 Log
   public static Log getLog(Class<?> aClass) {
     return getLog(aClass.getName());
   }
@@ -54,7 +56,7 @@ public final class LogFactory {
       throw new LogException("Error creating logger for logger " + logger + ".  Cause: " + t, t);
     }
   }
-
+  // 自定义 Log 实现类
   public static synchronized void useCustomLogging(Class<? extends Log> clazz) {
     setImplementation(clazz);
   }
@@ -86,20 +88,23 @@ public final class LogFactory {
   public static synchronized void useNoLogging() {
     setImplementation(org.apache.ibatis.logging.nologging.NoLoggingImpl.class);
   }
-
+  // 尝试
   private static void tryImplementation(Runnable runnable) {
     if (logConstructor == null) {
       try {
+        // 执行线程
         runnable.run();
       } catch (Throwable t) {
         // ignore
       }
     }
   }
-
+  // 设置实现类
   private static void setImplementation(Class<? extends Log> implClass) {
     try {
+      // 构造器
       Constructor<? extends Log> candidate = implClass.getConstructor(String.class);
+      // 创建构造器实例
       Log log = candidate.newInstance(LogFactory.class.getName());
       if (log.isDebugEnabled()) {
         log.debug("Logging initialized using '" + implClass + "' adapter.");

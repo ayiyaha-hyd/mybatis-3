@@ -25,13 +25,15 @@ import org.slf4j.spi.LocationAwareLogger;
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
+// SL4J 实现类
 public class Slf4jImpl implements Log {
 
   private Log log;
 
   public Slf4jImpl(String clazz) {
+    // 从 LOG 工厂获取 LOG
     Logger logger = LoggerFactory.getLogger(clazz);
-
+    // 如果是 LocationAwareLogger, 则创建 Slf4jLocationAwareLoggerImpl
     if (logger instanceof LocationAwareLogger) {
       try {
         // check for slf4j >= 1.6 method signature
@@ -44,6 +46,7 @@ public class Slf4jImpl implements Log {
     }
 
     // Logger is not LocationAwareLogger or slf4j version < 1.6
+    // 否则创建 Slf4jLoggerImpl
     log = new Slf4jLoggerImpl(logger);
   }
 

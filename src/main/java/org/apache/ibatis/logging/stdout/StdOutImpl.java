@@ -20,6 +20,7 @@ import org.apache.ibatis.logging.Log;
 /**
  * @author Clinton Begin
  */
+// 标准输出(基于 System.out(err).println(msg))
 public class StdOutImpl implements Log {
 
   public StdOutImpl(String clazz) {

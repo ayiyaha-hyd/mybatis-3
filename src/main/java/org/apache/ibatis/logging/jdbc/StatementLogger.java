@@ -31,6 +31,7 @@ import org.apache.ibatis.reflection.ExceptionUtil;
  * @author Eduardo Macarron
  *
  */
+// 日志代理
 public final class StatementLogger extends BaseJdbcLogger implements InvocationHandler {
 
   private final Statement statement;

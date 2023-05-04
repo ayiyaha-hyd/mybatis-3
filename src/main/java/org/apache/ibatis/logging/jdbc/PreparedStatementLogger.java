@@ -32,6 +32,7 @@ import org.apache.ibatis.reflection.ExceptionUtil;
  * @author Eduardo Macarron
  *
  */
+// 记录日志的连接代理
 public final class PreparedStatementLogger extends BaseJdbcLogger implements InvocationHandler {
 
   private final PreparedStatement statement;

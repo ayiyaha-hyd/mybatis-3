@@ -38,6 +38,7 @@ import org.apache.ibatis.reflection.ArrayUtil;
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
+// 代理日志记录
 public abstract class BaseJdbcLogger {
 
   protected static final Set<String> SET_METHODS;

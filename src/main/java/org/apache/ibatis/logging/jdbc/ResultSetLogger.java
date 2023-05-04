@@ -36,6 +36,7 @@ import org.apache.ibatis.reflection.ExceptionUtil;
  * @author Eduardo Macarron
  *
  */
+// 记录日志的结果集代理
 public final class ResultSetLogger extends BaseJdbcLogger implements InvocationHandler {
 
   private static final Set<Integer> BLOB_TYPES = new HashSet<>();
