@@ -25,9 +25,11 @@ import org.apache.ibatis.session.SqlSession;
 /**
  * @author Lasse Voss
  */
+// 映射器代理工厂(工厂模式)
 public class MapperProxyFactory<T> {
-
+  // mapper 接口
   private final Class<T> mapperInterface;
+  // Method 与 MapperMethod 的映射
   private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<>();
 
   public MapperProxyFactory(Class<T> mapperInterface) {
@@ -44,6 +46,7 @@ public class MapperProxyFactory<T> {
 
   @SuppressWarnings("unchecked")
   protected T newInstance(MapperProxy<T> mapperProxy) {
+    // 生成 jdk 代理
     return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] { mapperInterface }, mapperProxy);
   }
 
