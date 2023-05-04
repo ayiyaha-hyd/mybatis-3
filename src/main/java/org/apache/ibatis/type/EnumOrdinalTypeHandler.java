@@ -23,9 +23,11 @@ import java.sql.SQLException;
 /**
  * @author Clinton Begin
  */
+// Enum 类型处理器(Enum.ordinal <-> int)
 public class EnumOrdinalTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
-
+  // E 对应的枚举类
   private final Class<E> type;
+  // E 对应的枚举常量数组
   private final E[] enums;
 
   public EnumOrdinalTypeHandler(Class<E> type) {
@@ -41,38 +43,49 @@ public class EnumOrdinalTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E
 
   @Override
   public void setNonNullParameter(PreparedStatement ps, int i, E parameter, JdbcType jdbcType) throws SQLException {
+    // 使用 Enum.ordinal(序号)
+    // 将 java.lang.Enum 转换为 int 类型
+    // 然后设置参数
     ps.setInt(i, parameter.ordinal());
   }
 
   @Override
   public E getNullableResult(ResultSet rs, String columnName) throws SQLException {
+    // 获取 int 值
     int ordinal = rs.getInt(columnName);
     if (ordinal == 0 && rs.wasNull()) {
       return null;
     }
+    // 将 int 类型 转换为 java.lang.Enum 类型
     return toOrdinalEnum(ordinal);
   }
 
   @Override
   public E getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+    // 获取 int 值
     int ordinal = rs.getInt(columnIndex);
     if (ordinal == 0 && rs.wasNull()) {
       return null;
     }
+    // 将 int 类型 转换为 java.lang.Enum 类型
     return toOrdinalEnum(ordinal);
   }
 
   @Override
   public E getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
+    // 获取 int 值
     int ordinal = cs.getInt(columnIndex);
     if (ordinal == 0 && cs.wasNull()) {
       return null;
     }
+    // 将 int 类型 转换为 java.lang.Enum 类型
     return toOrdinalEnum(ordinal);
   }
 
+  // 将 int 类型 转换为 java.lang.Enum 类型
   private E toOrdinalEnum(int ordinal) {
     try {
+      // 通过序号(索引) 获取对应的 Enum
       return enums[ordinal];
     } catch (Exception ex) {
       throw new IllegalArgumentException("Cannot convert " + ordinal + " to " + type.getSimpleName() + " by ordinal value.", ex);

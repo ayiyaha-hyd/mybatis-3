@@ -18,12 +18,13 @@ package org.apache.ibatis.type;
 /**
  * @author Clinton Begin
  */
+// 字节数组工具类(基本类型与包装类型的相互转换)
 class ByteArrayUtils {
 
   private ByteArrayUtils() {
     // Prevent Instantiation
   }
-
+  // Byte[] -> byte[]
   static byte[] convertToPrimitiveArray(Byte[] objects) {
     final byte[] bytes = new byte[objects.length];
     for (int i = 0; i < objects.length; i++) {
@@ -31,7 +32,7 @@ class ByteArrayUtils {
     }
     return bytes;
   }
-
+  // byte[] -> Byte[]
   static Byte[] convertToObjectArray(byte[] bytes) {
     final Byte[] objects = new Byte[bytes.length];
     for (int i = 0; i < bytes.length; i++) {

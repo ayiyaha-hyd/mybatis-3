@@ -27,6 +27,8 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+// 别名的注解
 public @interface Alias {
+  // 别名
   String value();
 }

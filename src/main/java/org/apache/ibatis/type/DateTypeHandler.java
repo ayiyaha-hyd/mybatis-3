@@ -25,19 +25,24 @@ import java.util.Date;
 /**
  * @author Clinton Begin
  */
+// Date 类型处理器, 转时间戳(java.util.Date <-> java.sql.Timestamp)
 public class DateTypeHandler extends BaseTypeHandler<Date> {
 
   @Override
   public void setNonNullParameter(PreparedStatement ps, int i, Date parameter, JdbcType jdbcType)
       throws SQLException {
+    // 将 Date 转换成 Timestamp 类型
+    // 然后设置参数
     ps.setTimestamp(i, new Timestamp(parameter.getTime()));
   }
 
   @Override
   public Date getNullableResult(ResultSet rs, String columnName)
       throws SQLException {
+    // 获取 Timestamp 值
     Timestamp sqlTimestamp = rs.getTimestamp(columnName);
     if (sqlTimestamp != null) {
+      // 将 Timestamp 转为 Date 类型
       return new Date(sqlTimestamp.getTime());
     }
     return null;
@@ -46,8 +51,10 @@ public class DateTypeHandler extends BaseTypeHandler<Date> {
   @Override
   public Date getNullableResult(ResultSet rs, int columnIndex)
       throws SQLException {
+    // 获取 Timestamp 值
     Timestamp sqlTimestamp = rs.getTimestamp(columnIndex);
     if (sqlTimestamp != null) {
+      // 将 Timestamp 转为 Date 类型
       return new Date(sqlTimestamp.getTime());
     }
     return null;
@@ -56,8 +63,10 @@ public class DateTypeHandler extends BaseTypeHandler<Date> {
   @Override
   public Date getNullableResult(CallableStatement cs, int columnIndex)
       throws SQLException {
+    // 获取 Timestamp 值
     Timestamp sqlTimestamp = cs.getTimestamp(columnIndex);
     if (sqlTimestamp != null) {
+      // 将 Timestamp 转为 Date 类型
       return new Date(sqlTimestamp.getTime());
     }
     return null;

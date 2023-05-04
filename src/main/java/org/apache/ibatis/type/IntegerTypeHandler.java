@@ -23,32 +23,40 @@ import java.sql.SQLException;
 /**
  * @author Clinton Begin
  */
+// Integer 类型处理器(java.lang.Integer <-> int)
 public class IntegerTypeHandler extends BaseTypeHandler<Integer> {
 
   @Override
   public void setNonNullParameter(PreparedStatement ps, int i, Integer parameter, JdbcType jdbcType)
       throws SQLException {
+    // 直接设置参数
     ps.setInt(i, parameter);
   }
 
   @Override
   public Integer getNullableResult(ResultSet rs, String columnName)
       throws SQLException {
+    // 获取 int 类型结果
     int result = rs.getInt(columnName);
+    // 结果为 null 返回 null(此处当结果为 null 时, 排除 int 默认 0的干扰,返回实际 null)
     return result == 0 && rs.wasNull() ? null : result;
   }
 
   @Override
   public Integer getNullableResult(ResultSet rs, int columnIndex)
       throws SQLException {
+    // 获取 int 类型结果
     int result = rs.getInt(columnIndex);
+    // 结果为 null 返回 null(此处当结果为 null 时, 排除 int 默认 0的干扰,返回实际 null)
     return result == 0 && rs.wasNull() ? null : result;
   }
 
   @Override
   public Integer getNullableResult(CallableStatement cs, int columnIndex)
       throws SQLException {
+    // 获取 int 类型结果
     int result = cs.getInt(columnIndex);
+    // 结果为 null 返回 null(此处当结果为 null 时, 排除 int 默认 0的干扰,返回实际 null)
     return result == 0 && cs.wasNull() ? null : result;
   }
 }

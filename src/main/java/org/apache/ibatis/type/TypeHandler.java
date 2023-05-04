@@ -23,17 +23,23 @@ import java.sql.SQLException;
 /**
  * @author Clinton Begin
  */
+// 类型处理器(处理器模式)
 public interface TypeHandler<T> {
-
+  // 设置 PreparedStatement 指定参数
+  // JavaType -> JdbcType
   void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
 
   /**
    * @param columnName Colunm name, when configuration <code>useColumnLabel</code> is <code>false</code>
    */
+  // 获得 ResultSet 的指定字段的值(字段名)
+  // JdbcType -> JavaType
   T getResult(ResultSet rs, String columnName) throws SQLException;
-
+  // 获得 ResultSet 的指定字段的值(字段值)
+  // JdbcType -> JavaType
   T getResult(ResultSet rs, int columnIndex) throws SQLException;
-
+  // 获得 CallableStatement 的指定字段的值
+  // JdbcType -> JavaType
   T getResult(CallableStatement cs, int columnIndex) throws SQLException;
 
 }
