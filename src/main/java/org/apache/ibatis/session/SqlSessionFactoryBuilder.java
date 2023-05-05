@@ -45,12 +45,13 @@ public class SqlSessionFactoryBuilder {
     return build(reader, null, properties);
   }
 
+  // 构建 SqlSessionFactory 对象
   public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
     try {
       // 根据传入的字符流(mybatis xml配置文件), 环境标识和参数构建XMLConfigBuilder(xml配置建造者对象)
       XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
       // 通过XMLConfigBuilder解析xml配置
-      // 根据XMLConfigBuilder构建DefaultSqlSessionFactory,内部包含Configuration配置对象
+      // 创建 DefaultSqlSessionFactory 对象
       return build(parser.parse());
     } catch (Exception e) {
       throw ExceptionFactory.wrapException("Error building SqlSession.", e);
@@ -91,7 +92,7 @@ public class SqlSessionFactoryBuilder {
       }
     }
   }
-
+  // 根据XMLConfigBuilder构建DefaultSqlSessionFactory,内部包含Configuration配置对象
   public SqlSessionFactory build(Configuration config) {
     return new DefaultSqlSessionFactory(config);
   }

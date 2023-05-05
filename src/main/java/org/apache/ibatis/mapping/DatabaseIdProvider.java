@@ -27,6 +27,7 @@ import javax.sql.DataSource;
  *
  * @author Eduardo Macarron
  */
+// 数据库厂商标识 ID 提供者
 public interface DatabaseIdProvider {
 
   default void setProperties(Properties p) {

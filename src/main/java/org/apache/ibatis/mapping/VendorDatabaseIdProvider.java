@@ -37,6 +37,7 @@ import org.apache.ibatis.logging.LogFactory;
  *
  * @author Eduardo Macarron
  */
+// 数据库厂商标识 ID 提供者
 public class VendorDatabaseIdProvider implements DatabaseIdProvider {
 
   private Properties properties;
@@ -72,12 +73,14 @@ public class VendorDatabaseIdProvider implements DatabaseIdProvider {
     }
     return productName;
   }
-
+  // 获取数据库产品名称
   private String getDatabaseProductName(DataSource dataSource) throws SQLException {
     Connection con = null;
     try {
       con = dataSource.getConnection();
+      // 从连接里获取 元数据
       DatabaseMetaData metaData = con.getMetaData();
+      // 获取元数据中的数据库产品名
       return metaData.getDatabaseProductName();
     } finally {
       if (con != null) {

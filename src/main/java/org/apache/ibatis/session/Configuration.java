@@ -98,6 +98,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 /**
  * @author Clinton Begin
  */
+// MyBatis Configuration 对象, XML和注解中解析到的配置, 最终都会被解析到该 Configuration 对象(重要)
 public class Configuration {
 
   protected Environment environment;
@@ -225,8 +226,10 @@ public class Configuration {
   }
 
   public void setLogImpl(Class<? extends Log> logImpl) {
+    // 如果自定义的日志实现类不为空
     if (logImpl != null) {
       this.logImpl = logImpl;
+      // 使用自定义的日志实现类
       LogFactory.useCustomLogging(this.logImpl);
     }
   }
@@ -238,6 +241,7 @@ public class Configuration {
   public void setVfsImpl(Class<? extends VFS> vfsImpl) {
     if (vfsImpl != null) {
       this.vfsImpl = vfsImpl;
+      // 添加到 VFS 全局集合中
       VFS.addImplClass(this.vfsImpl);
     }
   }
@@ -758,8 +762,9 @@ public class Configuration {
   public Map<String, XNode> getSqlFragments() {
     return sqlFragments;
   }
-
+  // 添加拦截器
   public void addInterceptor(Interceptor interceptor) {
+    // 拦截器链
     interceptorChain.addInterceptor(interceptor);
   }
 
