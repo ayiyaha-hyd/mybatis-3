@@ -313,7 +313,7 @@ public class Configuration {
   public void addLoadedResource(String resource) {
     loadedResources.add(resource);
   }
-
+  // 判断资源是否已被加载
   public boolean isResourceLoaded(String resource) {
     return loadedResources.contains(resource);
   }

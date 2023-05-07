@@ -21,6 +21,7 @@ package org.apache.ibatis.builder;
  * @since 3.4.2
  * @author Kazuki Shimizu
  */
+// 标识对象需要初始化(实现该接口的对象, 需要执行 initialize() 进行初始化
 public interface InitializingObject {
 
   /**

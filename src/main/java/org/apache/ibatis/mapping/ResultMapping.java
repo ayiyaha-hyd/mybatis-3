@@ -28,15 +28,23 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 /**
  * @author Clinton Begin
  */
+// ResultMap 中每一条结果字段的解析
 public class ResultMapping {
 
   private Configuration configuration;
+  // java 对象属性名
   private String property;
+  // 数据库字段名
   private String column;
+  // java 属性字段类型
   private Class<?> javaType;
+  // 数据库字段类型
   private JdbcType jdbcType;
+  // 类型处理器
   private TypeHandler<?> typeHandler;
+  // 内嵌的 ResultMap 编号
   private String nestedResultMapId;
+  //
   private String nestedQueryId;
   private Set<String> notNullColumns;
   private String columnPrefix;
@@ -44,6 +52,7 @@ public class ResultMapping {
   private List<ResultMapping> composites;
   private String resultSet;
   private String foreignColumn;
+  // 是否懒加载
   private boolean lazy;
 
   ResultMapping() {
