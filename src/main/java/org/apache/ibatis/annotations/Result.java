@@ -15,14 +15,14 @@
  */
 package org.apache.ibatis.annotations;
 
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.TypeHandler;
+import org.apache.ibatis.type.UnknownTypeHandler;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.apache.ibatis.type.JdbcType;
-import org.apache.ibatis.type.TypeHandler;
-import org.apache.ibatis.type.UnknownTypeHandler;
 
 /**
  * @author Clinton Begin
@@ -30,7 +30,9 @@ import org.apache.ibatis.type.UnknownTypeHandler;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({})
+// 结果字段的注解, 对应 xml 中的 <result />
 public @interface Result {
+  // 是否是 ID 字段
   boolean id() default false;
 
   String column() default "";

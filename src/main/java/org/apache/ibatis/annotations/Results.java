@@ -26,11 +26,14 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(ElementType.METHOD)// 注册到方法
+// 结果的注解, 对应 xml 标签 <resultMap />
 public @interface Results {
   /**
    * The name of the result map.
    */
+  // 唯一标识符
   String id() default "";
+  // 结果集
   Result[] value() default {};
 }

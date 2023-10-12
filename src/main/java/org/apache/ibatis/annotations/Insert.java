@@ -26,7 +26,9 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(ElementType.METHOD)// 注册到方法
+// 插入语句注解
 public @interface Insert {
+  // 插入语句
   String[] value();
 }

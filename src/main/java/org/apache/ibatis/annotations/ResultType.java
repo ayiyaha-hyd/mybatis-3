@@ -32,7 +32,9 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(ElementType.METHOD)// 注册到方法
+// 结果类型
 public @interface ResultType {
+  // 结果类型
   Class<?> value();
 }
