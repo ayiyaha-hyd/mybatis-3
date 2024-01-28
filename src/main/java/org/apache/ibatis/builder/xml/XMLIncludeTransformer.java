@@ -33,6 +33,7 @@ import org.w3c.dom.NodeList;
 /**
  * @author Frank D. Martinez [mnesarco]
  */
+// xml <include /> 标签转换器
 public class XMLIncludeTransformer {
 
   private final Configuration configuration;
@@ -55,18 +56,25 @@ public class XMLIncludeTransformer {
    * @param source Include node in DOM tree
    * @param variablesContext Current context for static variables with values
    */
+  // 将 <include /> 标签 替换为引用的 <sql />
   private void applyIncludes(Node source, final Properties variablesContext, boolean included) {
+    // 如果是 <include /> 标签
     if (source.getNodeName().equals("include")) {
+      // 查找 <include /> 标签引用的 <sql /> 标签
       Node toInclude = findSqlFragment(getStringAttribute(source, "refid"), variablesContext);
       Properties toIncludeContext = getVariablesContext(source, variablesContext);
+      // 递归处理
       applyIncludes(toInclude, toIncludeContext, true);
       if (toInclude.getOwnerDocument() != source.getOwnerDocument()) {
         toInclude = source.getOwnerDocument().importNode(toInclude, true);
       }
+      // 将 <include /> 替换为 <sql /> 节点
       source.getParentNode().replaceChild(toInclude, source);
+      // 将 <sql /> 子节点添加到 <sql /> 前面
       while (toInclude.hasChildNodes()) {
         toInclude.getParentNode().insertBefore(toInclude.getFirstChild(), toInclude);
       }
+      // 移除 <include /> 标签
       toInclude.getParentNode().removeChild(toInclude);
     } else if (source.getNodeType() == Node.ELEMENT_NODE) {
       if (included && !variablesContext.isEmpty()) {
@@ -77,8 +85,10 @@ public class XMLIncludeTransformer {
           attr.setNodeValue(PropertyParser.parse(attr.getNodeValue(), variablesContext));
         }
       }
+      // 遍历子节点
       NodeList children = source.getChildNodes();
       for (int i = 0; i < children.getLength(); i++) {
+        // 递归调用
         applyIncludes(children.item(i), variablesContext, included);
       }
     } else if (included && (source.getNodeType() == Node.TEXT_NODE || source.getNodeType() == Node.CDATA_SECTION_NODE)
@@ -87,12 +97,16 @@ public class XMLIncludeTransformer {
       source.setNodeValue(PropertyParser.parse(source.getNodeValue(), variablesContext));
     }
   }
-
+  // 查找 sql 片段
   private Node findSqlFragment(String refid, Properties variables) {
+    // 替换动态变量
     refid = PropertyParser.parse(refid, variables);
+    // 获取完整的 refid
     refid = builderAssistant.applyCurrentNamespace(refid, true);
     try {
+      // 获取对应的 <sql/> 节点
       XNode nodeToInclude = configuration.getSqlFragments().get(refid);
+      // 拷贝节点
       return nodeToInclude.getNode().cloneNode(true);
     } catch (IllegalArgumentException e) {
       throw new IncompleteElementException("Could not find SQL statement to include with refid '" + refid + "'", e);

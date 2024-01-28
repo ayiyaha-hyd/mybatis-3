@@ -8,6 +8,10 @@
     <property name="jdbc.url" value="jdbc:hsqldb:mem:ayiyaha"/>
     <property name="jdbc.username" value="hyd"/>
   </properties>
+  <plugins>
+    <plugin interceptor="com.hyd.ayiyaha.interceptor.PerformanceInterceptor">
+    </plugin>
+  </plugins>
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC">

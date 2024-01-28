@@ -31,6 +31,7 @@ import org.apache.ibatis.session.Configuration;
 /**
  * @author Clinton Begin
  */
+// 映射的语句, 每个 <select/insert/update/delete /> 对应一个 MappedStatement 对象
 public final class MappedStatement {
 
   private String resource;
@@ -292,7 +293,7 @@ public final class MappedStatement {
   public String[] getResulSets() {
     return resultSets;
   }
-
+  // 获取 BoundSql 对象
   public BoundSql getBoundSql(Object parameterObject) {
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();

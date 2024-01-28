@@ -95,21 +95,25 @@ import org.apache.ibatis.type.UnknownTypeHandler;
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
+// Mapper 注解构造器
 public class MapperAnnotationBuilder {
-
+  // SQL 操作注解集合
   private static final Set<Class<? extends Annotation>> SQL_ANNOTATION_TYPES = new HashSet<>();
+  // SQL 操作提供者注解集合
   private static final Set<Class<? extends Annotation>> SQL_PROVIDER_ANNOTATION_TYPES = new HashSet<>();
 
   private final Configuration configuration;
   private final MapperBuilderAssistant assistant;
+  // 接口
   private final Class<?> type;
 
   static {
+    // 增删改查
     SQL_ANNOTATION_TYPES.add(Select.class);
     SQL_ANNOTATION_TYPES.add(Insert.class);
     SQL_ANNOTATION_TYPES.add(Update.class);
     SQL_ANNOTATION_TYPES.add(Delete.class);
-
+    // 增删改查
     SQL_PROVIDER_ANNOTATION_TYPES.add(SelectProvider.class);
     SQL_PROVIDER_ANNOTATION_TYPES.add(InsertProvider.class);
     SQL_PROVIDER_ANNOTATION_TYPES.add(UpdateProvider.class);
@@ -122,27 +126,34 @@ public class MapperAnnotationBuilder {
     this.configuration = configuration;
     this.type = type;
   }
-
+  // 解析注解(@Select, @Insert, @Update, @Delete)
   public void parse() {
     String resource = type.toString();
+    // 判断当前 Mapper 接口是否已经被加载过
     if (!configuration.isResourceLoaded(resource)) {
       loadXmlResource();
       configuration.addLoadedResource(resource);
       assistant.setCurrentNamespace(type.getName());
+      // 解析 @CacheNamespace 注解
       parseCache();
+      // 解析 @CacheNamespaceRef 注解
       parseCacheRef();
       Method[] methods = type.getMethods();
+      // 遍历每个方法, 解析其上的注解
       for (Method method : methods) {
         try {
           // issue #237
           if (!method.isBridge()) {
+            // 解析
             parseStatement(method);
           }
         } catch (IncompleteElementException e) {
+          // 解析失败添加到 incompleteMethods 集合
           configuration.addIncompleteMethod(new MethodResolver(this, method));
         }
       }
     }
+    // 解析待定的方法
     parsePendingMethods();
   }
 
@@ -184,17 +195,19 @@ public class MapperAnnotationBuilder {
       }
     }
   }
-
+  // 解析 @CacheNamespace 注解
   private void parseCache() {
     CacheNamespace cacheDomain = type.getAnnotation(CacheNamespace.class);
     if (cacheDomain != null) {
+      // 获取属性
       Integer size = cacheDomain.size() == 0 ? null : cacheDomain.size();
       Long flushInterval = cacheDomain.flushInterval() == 0 ? null : cacheDomain.flushInterval();
       Properties props = convertToProperties(cacheDomain.properties());
+      // 创建 Cache
       assistant.useNewCache(cacheDomain.implementation(), cacheDomain.eviction(), flushInterval, size, cacheDomain.readWrite(), cacheDomain.blocking(), props);
     }
   }
-
+  // 将 @Property 注解数组, 转化为 Properties 对象
   private Properties convertToProperties(Property[] properties) {
     if (properties.length == 0) {
       return null;
@@ -206,7 +219,7 @@ public class MapperAnnotationBuilder {
     }
     return props;
   }
-
+  // 解析 @CacheNamespaceRef 注解
   private void parseCacheRef() {
     CacheNamespaceRef cacheDomainRef = type.getAnnotation(CacheNamespaceRef.class);
     if (cacheDomainRef != null) {
@@ -296,12 +309,16 @@ public class MapperAnnotationBuilder {
     }
     return null;
   }
-
+  // 解析方法上的 SQL 操作相关注解
   void parseStatement(Method method) {
+    // 获取参数类型
     Class<?> parameterTypeClass = getParameterType(method);
+    // 获取 languageDriver
     LanguageDriver languageDriver = getLanguageDriver(method);
+    // 获取 SqlSource 对象
     SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterTypeClass, languageDriver);
     if (sqlSource != null) {
+      // 获取属性
       Options options = method.getAnnotation(Options.class);
       final String mappedStatementId = type.getName() + "." + method.getName();
       Integer fetchSize = null;

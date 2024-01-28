@@ -335,15 +335,16 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
     return parameterMap;
   }
-
+  // 获取 ResultMap 集合
   private List<ResultMap> getStatementResultMaps(
       String resultMap,
       Class<?> resultType,
       String statementId) {
+    // 获取 resultMap ID
     resultMap = applyCurrentNamespace(resultMap, true);
 
     List<ResultMap> resultMaps = new ArrayList<>();
-    if (resultMap != null) {
+    if (resultMap != null) {// 如果 resultMap 不为空, 则获取 resultMap 对应的 ResultMap 对象集合
       String[] resultMapNames = resultMap.split(",");
       for (String resultMapName : resultMapNames) {
         try {
@@ -352,7 +353,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
           throw new IncompleteElementException("Could not find result map '" + resultMapName + "' referenced from '" + statementId + "'", e);
         }
       }
-    } else if (resultType != null) {
+    } else if (resultType != null) {// 如果 resultType 非空
       ResultMap inlineResultMap = new ResultMap.Builder(
           configuration,
           statementId + "-Inline",

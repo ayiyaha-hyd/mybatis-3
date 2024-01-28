@@ -13,10 +13,10 @@ public class TEST002 {
   @Test public void PropertyTokenizer_test(){
     PropertyTokenizer propertyTokenizer = new PropertyTokenizer("order[3].item[1].name");
     PropertyTokenizer cur = propertyTokenizer;
-    System.out.printf("%s, %s, %s, %s, %s%n",cur,cur.getName(),cur.getIndex(),cur.getIndexedName(),cur.getChildren());
+    System.out.printf("%s, %s, %s, %s%n",cur.getName(),cur.getIndex(),cur.getIndexedName(),cur.getChildren());
     while (cur.hasNext()){
       PropertyTokenizer next = cur.next();
-      System.out.printf("%s, %s, %s, %s, %s%n",next,next.getName(),next.getIndex(),next.getIndexedName(),next.getChildren());
+      System.out.printf("%s, %s, %s, %s%n",next.getName(),next.getIndex(),next.getIndexedName(),next.getChildren());
       cur = next;
     }
   }

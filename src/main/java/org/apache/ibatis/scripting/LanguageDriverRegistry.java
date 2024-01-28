@@ -21,8 +21,9 @@ import java.util.Map;
 /**
  * @author Frank D. Martinez [mnesarco]
  */
+// 语言驱动注册表
 public class LanguageDriverRegistry {
-
+  // Class -> LanguageDriver 映射
   private final Map<Class<? extends LanguageDriver>, LanguageDriver> LANGUAGE_DRIVER_MAP = new HashMap<>();
 
   private Class<? extends LanguageDriver> defaultDriverClass;

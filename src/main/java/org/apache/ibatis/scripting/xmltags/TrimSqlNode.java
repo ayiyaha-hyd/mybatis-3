@@ -28,11 +28,15 @@ import org.apache.ibatis.session.Configuration;
  * @author Clinton Begin
  */
 public class TrimSqlNode implements SqlNode {
-
+  // SqlNode 节点
   private final SqlNode contents;
+  // 前缀
   private final String prefix;
+  // 后缀
   private final String suffix;
+  // 需要被覆盖的前缀
   private final List<String> prefixesToOverride;
+  // 需要被覆盖的后缀
   private final List<String> suffixesToOverride;
   private final Configuration configuration;
 
@@ -51,7 +55,9 @@ public class TrimSqlNode implements SqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
+    // 创建 FilteredDynamicContext
     FilteredDynamicContext filteredDynamicContext = new FilteredDynamicContext(context);
+    // 应用
     boolean result = contents.apply(filteredDynamicContext);
     filteredDynamicContext.applyAll();
     return result;
@@ -59,6 +65,7 @@ public class TrimSqlNode implements SqlNode {
 
   private static List<String> parseOverrides(String overrides) {
     if (overrides != null) {
+      // 使用 "|" 作为分隔符, 分隔字符串为字符串集合, 同时转化为大写
       final StringTokenizer parser = new StringTokenizer(overrides, "|", false);
       final List<String> list = new ArrayList<>(parser.countTokens());
       while (parser.hasMoreTokens()) {
@@ -68,11 +75,15 @@ public class TrimSqlNode implements SqlNode {
     }
     return Collections.emptyList();
   }
-
+  // 上下文
   private class FilteredDynamicContext extends DynamicContext {
+    // 委托的 DynamicContext 对象
     private DynamicContext delegate;
+    // prefix 是否已被应用
     private boolean prefixApplied;
+    // suffix 是否已被应用
     private boolean suffixApplied;
+    // StringBuilder
     private StringBuilder sqlBuffer;
 
     public FilteredDynamicContext(DynamicContext delegate) {
@@ -84,12 +95,16 @@ public class TrimSqlNode implements SqlNode {
     }
 
     public void applyAll() {
+      // trim 多余的空格, 生成新的 aqlBuffer
       sqlBuffer = new StringBuilder(sqlBuffer.toString().trim());
+      // 大写
       String trimmedUppercaseSql = sqlBuffer.toString().toUpperCase(Locale.ENGLISH);
+      // 应用 TrimSqlNode 的 trim 逻辑
       if (trimmedUppercaseSql.length() > 0) {
         applyPrefix(sqlBuffer, trimmedUppercaseSql);
         applySuffix(sqlBuffer, trimmedUppercaseSql);
       }
+      // 添加到 delegate
       delegate.appendSql(sqlBuffer.toString());
     }
 

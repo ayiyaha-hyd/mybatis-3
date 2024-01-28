@@ -4,10 +4,22 @@
   <sql id="columns">
     id, name, age, height, weight, active, dt
   </sql>
+  <sql id="where_condition">
+    ID = #{id}
+  </sql>
   <select id="selectAll" resultType="com.hyd.ayiyaha.entity.Subject">
-    SELECT * FROM subject
+    SELECT
+    <include refid="columns"/>
+    FROM subject
   </select>
+  <sql id="selectOne_sql">
+    select
+    <include refid="columns"/>
+    FROM subject
+where
+<include refid="where_condition"/>
+  </sql>
   <select id="selectOne" resultType="com.hyd.ayiyaha.entity.Subject">
-    SELECT * FROM subject where ID = #{id}
+<include refid="selectOne_sql"/>
   </select>
 </mapper>

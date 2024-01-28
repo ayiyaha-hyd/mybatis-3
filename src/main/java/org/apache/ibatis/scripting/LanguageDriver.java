@@ -22,7 +22,7 @@ import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.session.Configuration;
-
+// 语言驱动接口
 public interface LanguageDriver {
 
   /**
@@ -35,6 +35,7 @@ public interface LanguageDriver {
    * @author Frank D. Martinez [mnesarco]
    * @see DefaultParameterHandler
    */
+  // 创建 ParameterHandler
   ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql);
 
   /**
@@ -46,6 +47,7 @@ public interface LanguageDriver {
    * @param parameterType input parameter type got from a mapper method or specified in the parameterType xml attribute. Can be null.
    * @return
    */
+  // 创建 SqlSource (从 mapper.xml <select|insert|update|delete /> 标签获取)
   SqlSource createSqlSource(Configuration configuration, XNode script, Class<?> parameterType);
 
   /**
@@ -57,6 +59,7 @@ public interface LanguageDriver {
    * @param parameterType input parameter type got from a mapper method or specified in the parameterType xml attribute. Can be null.
    * @return
    */
+  // 创建 SqlSource (从方法注解获取)
   SqlSource createSqlSource(Configuration configuration, String script, Class<?> parameterType);
 
 }
