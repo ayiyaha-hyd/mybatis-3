@@ -45,6 +45,7 @@ import org.apache.ibatis.session.SqlSession;
  *
  * @author Clinton Begin
  */
+// 默认sql会话
 public class DefaultSqlSession implements SqlSession {
 
   private final Configuration configuration;
@@ -73,7 +74,7 @@ public class DefaultSqlSession implements SqlSession {
   @Override
   public <T> T selectOne(String statement, Object parameter) {
     // Popular vote was to return null on 0 results and throw exception on too many.
-    List<T> list = this.selectList(statement, parameter);
+    List<T> list = this.selectList(statement, parameter);// selectOne 底层也是调用的selectList
     if (list.size() == 1) {
       return list.get(0);
     } else if (list.size() > 1) {
@@ -316,6 +317,7 @@ public class DefaultSqlSession implements SqlSession {
     return (!autoCommit && dirty) || force;
   }
 
+  // 将参数对象 `parameter` 包装为集合类型，以便处理集合参数
   private Object wrapCollection(final Object object) {
     if (object instanceof Collection) {
       StrictMap<Object> map = new StrictMap<>();

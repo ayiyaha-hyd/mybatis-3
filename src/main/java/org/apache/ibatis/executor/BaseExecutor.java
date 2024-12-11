@@ -55,7 +55,7 @@ public abstract class BaseExecutor implements Executor {
   protected Executor wrapper;
 
   protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
-  protected PerpetualCache localCache;
+  protected PerpetualCache localCache;// Mybatis一级缓存
   protected PerpetualCache localOutputParameterCache;
   protected Configuration configuration;
 
@@ -139,20 +139,20 @@ public abstract class BaseExecutor implements Executor {
   @SuppressWarnings("unchecked")
   @Override
   public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
-    ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());
+    ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());// 设置错误上下文的资源、活动和对象信息
     if (closed) {
       throw new ExecutorException("Executor was closed.");
     }
-    if (queryStack == 0 && ms.isFlushCacheRequired()) {
+    if (queryStack == 0 && ms.isFlushCacheRequired()) {// 查询栈等于0即栈退出的时候(离开一级缓存作用域的时候),或者开启强制刷新缓存时,清空一级缓存
       clearLocalCache();
     }
     List<E> list;
     try {
       queryStack++;
       list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
-      if (list != null) {
+      if (list != null) {// 命中缓存,从缓存获取
         handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
-      } else {
+      } else {// 从数据库获取
         list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
       }
     } finally {
@@ -319,6 +319,7 @@ public abstract class BaseExecutor implements Executor {
 
   private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
     List<E> list;
+    // 先在本地缓存中放置一个占位符，然后执行实际的查询操作，最后将查询结果存入本地缓存
     localCache.putObject(key, EXECUTION_PLACEHOLDER);
     try {
       list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
@@ -333,8 +334,8 @@ public abstract class BaseExecutor implements Executor {
   }
 
   protected Connection getConnection(Log statementLog) throws SQLException {
-    Connection connection = transaction.getConnection();
-    if (statementLog.isDebugEnabled()) {
+    Connection connection = transaction.getConnection();//从事务获取连接
+    if (statementLog.isDebugEnabled()) {// 如果开启了Debug, 则通过JDK动态代理生成基于接口的实现类
       return ConnectionLogger.newInstance(connection, statementLog, queryStack);
     } else {
       return connection;

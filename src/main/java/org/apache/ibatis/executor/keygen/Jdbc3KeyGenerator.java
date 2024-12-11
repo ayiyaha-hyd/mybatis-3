@@ -64,6 +64,7 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
 
   @Override
   public void processAfter(Executor executor, MappedStatement ms, Statement stmt, Object parameter) {
+    // `xml`配置了`useGeneratedKeys=true`则会使用`Mybatis`的主键生成器,实际上只实现了processAfter方法，其使用方法如下配置，目的是将主键作为返回值返回，这种用法只能是在有自增主键的数据库中使用
     processBatch(ms, stmt, parameter);
   }
 

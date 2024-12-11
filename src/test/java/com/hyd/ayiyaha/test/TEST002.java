@@ -7,7 +7,9 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class TEST002 {
   @Test public void PropertyTokenizer_test(){
@@ -24,5 +26,11 @@ public class TEST002 {
     MetaClass metaClass = MetaClass.forClass(PropertyTokenizer.class, new DefaultReflectorFactory());
     String[] getterNames = metaClass.getGetterNames();
     System.out.println(Arrays.toString(getterNames));
+  }
+
+  @Test public void testJavaStreamFindFirstAndFindAny(){
+    List<String> list = new ArrayList<>(Arrays.asList("a","b","c"));
+    list.stream().filter("d"::equals).findFirst().ifPresent(System.out::println);
+    list.stream().filter("d"::equals).findAny().ifPresent(System.out::println);
   }
 }

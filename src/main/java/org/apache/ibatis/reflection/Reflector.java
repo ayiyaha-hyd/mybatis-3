@@ -98,7 +98,7 @@ public class Reflector {
   private void addDefaultConstructor(Class<?> clazz) {
     // 获取所有构造方法
     Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-    // 遍历获取无参构造方法
+    // 遍历获取无参构造方法(直接通过clazz.getConstructor()可能会导致NoSuchMethodException异常)
     Arrays.stream(constructors).filter(constructor -> constructor.getParameterTypes().length == 0)
       .findAny().ifPresent(constructor -> this.defaultConstructor = constructor);
   }
@@ -142,12 +142,12 @@ public class Reflector {
           if (!boolean.class.equals(candidateType)) {
             isAmbiguous = true;
             break;
-          // 如果候选者返回类型是 boolean 类型
+          // 如果返回类型都是 boolean 类型并且 candidate 是 isXXX(),选择candidate
           } else if (candidate.getName().startsWith("is")) {
             // 选择 boolean 类型的 is 方法
             winner = candidate;
           }
-        // isAssignableFrom 判断 candidateType 是否与 winnerType 相同或者是其父类
+        // isAssignableFrom 判断 candidateType 是否与 winnerType 相同或者是其父类/超接口
         // 此处说明 winnerType 是后代, 不做处理(因为子类的类型<=父类)
         } else if (candidateType.isAssignableFrom(winnerType)) {
           // OK getter type is descendant

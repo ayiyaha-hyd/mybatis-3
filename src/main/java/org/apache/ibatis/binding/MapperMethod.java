@@ -44,54 +44,55 @@ import org.apache.ibatis.session.SqlSession;
  * @author Lasse Voss
  * @author Kazuki Shimizu
  */
+// 装了 Mapper 接口方法的元数据，并负责将方法调用转换为 SQL 执行
 public class MapperMethod {
 
   private final SqlCommand command;
   private final MethodSignature method;
 
   public MapperMethod(Class<?> mapperInterface, Method method, Configuration config) {
-    this.command = new SqlCommand(config, mapperInterface, method);
-    this.method = new MethodSignature(config, mapperInterface, method);
+    this.command = new SqlCommand(config, mapperInterface, method);// `SqlCommand` 类用于封装 `Mapper` 接口方法对应的 `SQL` 命令信息
+    this.method = new MethodSignature(config, mapperInterface, method);// 用于封装 Mapper 接口方法的签名信息，包括返回类型、参数类型等
   }
 
   public Object execute(SqlSession sqlSession, Object[] args) {
     Object result;
     switch (command.getType()) {
-      case INSERT: {
+      case INSERT: {// 插入
         Object param = method.convertArgsToSqlCommandParam(args);
-        result = rowCountResult(sqlSession.insert(command.getName(), param));
+        result = rowCountResult(sqlSession.insert(command.getName(), param));// 返回执行影响行数或者成功与否的包装类
         break;
       }
-      case UPDATE: {
+      case UPDATE: {// 更新
         Object param = method.convertArgsToSqlCommandParam(args);
-        result = rowCountResult(sqlSession.update(command.getName(), param));
+        result = rowCountResult(sqlSession.update(command.getName(), param));// 返回执行影响行数或者成功与否的包装类
         break;
       }
-      case DELETE: {
+      case DELETE: {// 删除
         Object param = method.convertArgsToSqlCommandParam(args);
-        result = rowCountResult(sqlSession.delete(command.getName(), param));
+        result = rowCountResult(sqlSession.delete(command.getName(), param));// 返回执行影响行数或者成功与否的包装类
         break;
       }
-      case SELECT:
+      case SELECT:// 查询
         if (method.returnsVoid() && method.hasResultHandler()) {
           executeWithResultHandler(sqlSession, args);
           result = null;
-        } else if (method.returnsMany()) {
+        } else if (method.returnsMany()) {// 返回多个结果
           result = executeForMany(sqlSession, args);
-        } else if (method.returnsMap()) {
+        } else if (method.returnsMap()) {// 返回Map
           result = executeForMap(sqlSession, args);
-        } else if (method.returnsCursor()) {
+        } else if (method.returnsCursor()) {// 返回游标
           result = executeForCursor(sqlSession, args);
         } else {
           Object param = method.convertArgsToSqlCommandParam(args);
-          result = sqlSession.selectOne(command.getName(), param);
-          if (method.returnsOptional()
+          result = sqlSession.selectOne(command.getName(), param);// 返回单条记录
+          if (method.returnsOptional()// 如果返回值需要包装为Optional,则进行包装
               && (result == null || !method.getReturnType().equals(result.getClass()))) {
             result = Optional.ofNullable(result);
           }
         }
         break;
-      case FLUSH:
+      case FLUSH:// 刷新
         result = sqlSession.flushStatements();
         break;
       default:
@@ -129,9 +130,9 @@ public class MapperMethod {
           + " or a resultType attribute in XML so a ResultHandler can be used as a parameter.");
     }
     Object param = method.convertArgsToSqlCommandParam(args);
-    if (method.hasRowBounds()) {
+    if (method.hasRowBounds()) {// 判断是否有分页
       RowBounds rowBounds = method.extractRowBounds(args);
-      sqlSession.select(command.getName(), param, rowBounds, method.extractResultHandler(args));
+      sqlSession.select(command.getName(), param, rowBounds, method.extractResultHandler(args));// 分页查询
     } else {
       sqlSession.select(command.getName(), param, method.extractResultHandler(args));
     }

@@ -36,6 +36,7 @@ import org.apache.ibatis.transaction.Transaction;
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
+// 缓存包装执行器, 与Mybatis二级缓存有关
 public class CachingExecutor implements Executor {
 
   private final Executor delegate;
@@ -78,8 +79,8 @@ public class CachingExecutor implements Executor {
 
   @Override
   public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
-    BoundSql boundSql = ms.getBoundSql(parameterObject);
-    CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
+    BoundSql boundSql = ms.getBoundSql(parameterObject);// 包含了最终生成的 SQL 语句及其参数信息
+    CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);// 创建一个缓存键 `CacheKey`，用于在缓存中唯一标识这次查询。缓存键通常由 `MappedStatement`、参数对象、分页信息和 `BoundSql` 等信息组成
     return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
   }
 
@@ -95,18 +96,19 @@ public class CachingExecutor implements Executor {
     Cache cache = ms.getCache();
     if (cache != null) {
       flushCacheIfRequired(ms);
-      if (ms.isUseCache() && resultHandler == null) {
+      if (ms.isUseCache() && resultHandler == null) {// 使用缓存
         ensureNoOutParams(ms, boundSql);
         @SuppressWarnings("unchecked")
-        List<E> list = (List<E>) tcm.getObject(cache, key);
+        List<E> list = (List<E>) tcm.getObject(cache, key);// 从二级缓存获取数据
         if (list == null) {
           list = delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+          // 从数据库查出结果,放入缓存
           tcm.putObject(cache, key, list); // issue #578 and #116
         }
         return list;
       }
     }
-    return delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+    return delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);// 直接查询(不使用缓存)
   }
 
   @Override

@@ -28,6 +28,7 @@ import org.apache.ibatis.reflection.ExceptionUtil;
 /**
  * @author Clinton Begin
  */
+// Mybatis用来包装代理与调用代理方法的handler(执行处理器)
 public class Plugin implements InvocationHandler {
 
   private final Object target;
@@ -40,12 +41,13 @@ public class Plugin implements InvocationHandler {
     this.signatureMap = signatureMap;
   }
 
+  // 生成目标对象的代理对象
   public static Object wrap(Object target, Interceptor interceptor) {
     Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
     Class<?> type = target.getClass();
     Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
     if (interfaces.length > 0) {
-      return Proxy.newProxyInstance(
+      return Proxy.newProxyInstance(// 基于JDK动态代理
           type.getClassLoader(),
           interfaces,
           new Plugin(target, interceptor, signatureMap));
@@ -53,6 +55,7 @@ public class Plugin implements InvocationHandler {
     return target;
   }
 
+  // 执行代理方法
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {

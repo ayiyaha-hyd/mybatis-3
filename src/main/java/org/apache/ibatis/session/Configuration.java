@@ -594,7 +594,7 @@ public class Configuration {
 
   public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
-    statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
+    statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);// 将拦截器注册到当前的`StatementHandler`
     return statementHandler;
   }
 
@@ -602,6 +602,7 @@ public class Configuration {
     return newExecutor(transaction, defaultExecutorType);
   }
 
+  // 创建执行器
   public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
     executorType = executorType == null ? defaultExecutorType : executorType;
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
@@ -614,9 +615,9 @@ public class Configuration {
       executor = new SimpleExecutor(this, transaction);
     }
     if (cacheEnabled) {
-      executor = new CachingExecutor(executor);
+      executor = new CachingExecutor(executor);// 缓存包装执行器
     }
-    executor = (Executor) interceptorChain.pluginAll(executor);
+    executor = (Executor) interceptorChain.pluginAll(executor);// 为该执行器注册拦截器
     return executor;
   }
 
@@ -781,6 +782,7 @@ public class Configuration {
   }
 
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+    // 基于接口实现的JDK动态代理, 获取指定Mapper接口的代理实现类
     return mapperRegistry.getMapper(type, sqlSession);
   }
 

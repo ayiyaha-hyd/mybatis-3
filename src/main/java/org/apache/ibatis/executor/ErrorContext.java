@@ -18,22 +18,33 @@ package org.apache.ibatis.executor;
 /**
  * @author Clinton Begin
  */
+// 错误上下文
 public class ErrorContext {
-
+  // 获取当前系统行分隔符, 默认是"\n"
   private static final String LINE_SEPARATOR = System.getProperty("line.separator","\n");
+  // 本地线程变量
   private static final ThreadLocal<ErrorContext> LOCAL = new ThreadLocal<>();
 
+  // 临时保存当前的错误上下文
   private ErrorContext stored;
+  // 错误可能存在于的资源
   private String resource;
+  // 错误可能涉及的事件
   private String activity;
+  // 错误可能涉及的对象
   private String object;
+  // 信息
   private String message;
+  // 错误可能涉及的sql
   private String sql;
+  // 引起错误的原因
   private Throwable cause;
 
+  // 私有
   private ErrorContext() {
   }
 
+  // 单例
   public static ErrorContext instance() {
     ErrorContext context = LOCAL.get();
     if (context == null) {
@@ -43,6 +54,7 @@ public class ErrorContext {
     return context;
   }
 
+  // 暂存当前错误上下文, 开启一个新的错误上下文(旧的上下文存于新的上下文.stored里),返回新的错误上下文
   public ErrorContext store() {
     ErrorContext newContext = new ErrorContext();
     newContext.stored = this;
@@ -50,6 +62,7 @@ public class ErrorContext {
     return LOCAL.get();
   }
 
+  // 恢复之前的错误上下文, 将当前的错误上下文销毁
   public ErrorContext recall() {
     if (stored != null) {
       LOCAL.set(stored);
@@ -88,6 +101,7 @@ public class ErrorContext {
     return this;
   }
 
+  // 重置
   public ErrorContext reset() {
     resource = null;
     activity = null;
@@ -99,6 +113,7 @@ public class ErrorContext {
     return this;
   }
 
+  // 重写toString(), 优雅输出格式化的错误上下文信息
   @Override
   public String toString() {
     StringBuilder description = new StringBuilder();

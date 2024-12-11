@@ -84,7 +84,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
       // 如果是 Object 类本身的方法, 则直接调用
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, args);
-      } else if (method.isDefault()) {// 如果是 default 方法,反射调用
+      } else if (method.isDefault()) {// 如果是 default 方法,通过`MethodHandles`进行方法访问, 相比反射性能更好
         if (privateLookupInMethod == null) {
           return invokeDefaultMethodJava8(proxy, method, args);
         } else {

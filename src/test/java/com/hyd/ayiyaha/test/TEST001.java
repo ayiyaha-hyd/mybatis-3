@@ -38,6 +38,7 @@ public class TEST001 {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       SubjectMapper mapper = sqlSession.getMapper(SubjectMapper.class);
       Subject queryBean = new Subject();
+      queryBean.setAge(10);
       List<Subject> list = mapper.selectAll(queryBean);
       assertNotNull(list);
       System.out.println(list);

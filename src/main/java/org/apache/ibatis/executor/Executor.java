@@ -30,6 +30,7 @@ import org.apache.ibatis.transaction.Transaction;
 /**
  * @author Clinton Begin
  */
+// 执行器 (定义了核心行为，包括 SQL 执行、事务管理、缓存处理等)
 public interface Executor {
 
   ResultHandler NO_RESULT_HANDLER = null;
